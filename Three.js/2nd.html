@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Three.js: Thousand Sunny Navigator</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: sans-serif; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #ffcc00; letter-spacing: 2px; text-shadow: 0 0 10px #ff0000; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div id="ui">THOUSAND SUNNY: GRAND LINE SECTOR</div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x001122, 0.1); // Deep sea fog
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+
+        const sunny = new THREE.Group();
+        
+
+        const hullGeom = new THREE.CapsuleGeometry(0.5, 1.5, 4, 8);
+        const hullMat = new THREE.MeshStandardMaterial({ color: 0xaa5522 }); // Wood brown
+        const hull = new THREE.Mesh(hullGeom, hullMat);
+        hull.rotation.z = Math.PI / 2;
+        sunny.add(hull);
+
+
+        const mastGeom = new THREE.CylinderGeometry(0.05, 0.05, 2);
+        const mast = new THREE.Mesh(mastGeom, hullMat);
+        mast.position.y = 1;
+        sunny.add(mast);
+
+
+        const lionGeom = new THREE.IcosahedronGeometry(0.4, 1);
+        const lionMat = new THREE.MeshStandardMaterial({ color: 0xffcc00, emissive: 0xffaa00 });
+        const lion = new THREE.Mesh(lionGeom, lionMat);
+        lion.position.set(1.1, 0.2, 0);
+        sunny.add(lion);
+
+        scene.add(sunny);
+
+
+        const oceanGeom = new THREE.PlaneGeometry(20, 20, 100, 100);
+        const oceanMat = new THREE.MeshStandardMaterial({ 
+            color: 0x0044ff, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.6
+        });
+        const ocean = new THREE.Mesh(oceanGeom, oceanMat);
+        ocean.rotation.x = -Math.PI / 2;
+        scene.add(ocean);
+
+
+        const sunLight = new THREE.DirectionalLight(0xffffff, 2);
+        sunLight.position.set(5, 10, 5);
+        scene.add(sunLight);
+        scene.add(new THREE.AmbientLight(0x222244));
+
+        camera.position.set(0, 3, 6);
+        camera.lookAt(0, 0, 0);
+
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            const t = time * 0.001;
+
+
+            sunny.position.y = Math.sin(t * 2) * 0.1;
+            sunny.rotation.z = Math.sin(t) * 0.05;
+            sunny.rotation.y = Math.cos(t * 0.5) * 0.1;
+
+
+            const verts = oceanGeom.attributes.position;
+            for (let i = 0; i < verts.count; i++) {
+                const x = verts.getX(i);
+                const y = verts.getY(i);
+                const z = Math.sin(x + t) * Math.cos(y + t) * 0.2;
+                verts.setZ(i, z);
+            }
+            verts.needsUpdate = true;
+
+            renderer.render(scene, camera);
+        }
+
+
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 2;
+            camera.position.x = x * 2;
+            camera.lookAt(sunny.position);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced Interaction: Haki Domain</title>
+    <style>
+        body { margin: 0; background-color: #000; overflow: hidden; }
+        #particles-js { position: absolute; width: 100%; height: 100%; z-index: 1; }
+        
+        /* The UI Layer */
+        .dashboard {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 10; text-align: center; color: #fff; font-family: 'Syncopate', sans-serif;
+            pointer-events: none;
+        }
+        .status-bar {
+            color: #ff0044; font-size: 14px; letter-spacing: 5px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js"></div>
+    <div class="dashboard">
+        <h1 style="letter-spacing: 15px; font-size: 4vw;">DOMAIN_EXPANSION</h1>
+        <p class="status-bar">INTERACTION_MODE: REPULSE_AND_GRAB</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <script>
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 120, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": ["#ff0044", "#00f2ff", "#7000ff"] }, // Multi-colored Haki
+                "shape": { 
+                    "type": ["circle", "triangle", "polygon"], 
+                    "polygon": { "nb_sides": 6 } 
+                },
+                "opacity": { "value": 0.6, "random": true },
+                "size": { "value": 4, "random": true },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 120,
+                    "color": "#00f2ff",
+                    "opacity": 0.4,
+                    "width": 2
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 4,
+                    "direction": "none",
+                    "out_mode": "bounce" // Particles bounce off screen edges
+                }
+            },
+            "interactivity": {
+                "detect_on": "window",
+                "events": {
+                    "onhover": { 
+                        "enable": true, 
+                        "mode": ["grab", "bubble"] // Combines connecting and growing
+                    },
+                    "onclick": { 
+                        "enable": true, 
+                        "mode": "repulse" // Push the aura away on click
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": { "distance": 200, "line_linked": { "opacity": 1 } },
+                    "bubble": { "distance": 200, "size": 12, "duration": 2, "opacity": 0.8 },
+                    "repulse": { "distance": 400, "duration": 0.4 }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+</body>
+</html>

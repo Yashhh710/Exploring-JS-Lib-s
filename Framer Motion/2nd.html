@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Supreme Haki WAAPI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background: #000; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer;
+        }
+        .lightning {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: #ff0044;
+            box-shadow: 0 0 15px #ff0000;
+            opacity: 0;
+            transform-origin: bottom center;
+        }
+        #core {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 40px white, 0 0 80px #ff0044;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="core"></div>
+
+    <script>
+        const core = document.getElementById('core');
+
+
+        function createLightning() {
+            for (let i = 0; i < 15; i++) {
+                const bolt = document.createElement('div');
+                bolt.className = 'lightning';
+                document.body.appendChild(bolt);
+
+                const angle = Math.random() * 360;
+                const length = 50 + Math.random() * 150;
+                
+
+                bolt.animate([
+                    { 
+                        transform: `rotate(${angle}deg) translateY(0) scaleY(1)`, 
+                        opacity: 1 
+                    },
+                    { 
+                        transform: `rotate(${angle + (Math.random() * 20 - 10)}deg) translateY(-${length}px) scaleY(0)`, 
+                        opacity: 0 
+                    }
+                ], {
+                    duration: 400 + Math.random() * 400,
+                    easing: 'cubic-bezier(0.2, 1, 0.3, 1)',
+                    fill: 'forwards'
+                }).onfinish = () => bolt.remove(); // Clean up memory
+            }
+        }
+
+        function triggerClash() {
+
+            core.animate([
+                { transform: 'scale(1)', opacity: 1 },
+                { transform: 'scale(8)', opacity: 0 }
+            ], {
+                duration: 500,
+                easing: 'ease-out'
+            });
+
+
+            document.body.animate([
+                { transform: 'translateX(0)' },
+                { transform: 'translateX(10px)' },
+                { transform: 'translateX(-10px)' },
+                { transform: 'translateX(0)' }
+            ], {
+                duration: 100,
+                iterations: 5
+            });
+
+
+            createLightning();
+        }
+
+        window.addEventListener('mousedown', triggerClash);
+
+
+        core.animate([
+            { filter: 'brightness(1)' },
+            { filter: 'brightness(2)' }
+        ], {
+            duration: 100,
+            iterations: Infinity,
+            direction: 'alternate'
+        });
+    </script>
+</body>
+</html>

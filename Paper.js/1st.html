@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recursive Neon Tree</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.6.6/processing.min.js"></script>
+    <style>
+        body { margin: 0; background: #050505; overflow: hidden; }
+        canvas { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+
+    <script type="application/processing">
+        float angle;
+
+        void setup() {
+            size(window.innerWidth, window.innerHeight);
+        }
+
+        void draw() {
+            background(5, 5, 15); // Deep midnight blue
+            
+
+            float a = (mouseX / (float) width) * 90f;
+            angle = radians(a);
+            
+
+            translate(width/2, height);
+            
+
+            stroke(0, 255, 200);
+            line(0, 0, 0, -120);
+            
+
+            translate(0, -120);
+            branch(120);
+        }
+
+        void branch(float h) {
+
+            h *= 0.66;
+
+            if (h > 2) {
+
+                pushMatrix();    
+                rotate(angle);   
+                stroke(255, h * 5, 150); // Color shifts based on branch depth
+                line(0, 0, 0, -h); 
+                translate(0, -h); 
+                branch(h);       
+                popMatrix();     
+
+
+                pushMatrix();
+                rotate(-angle);
+                stroke(100, 255, h * 10);
+                line(0, 0, 0, -h);
+                translate(0, -h);
+                branch(h);
+                popMatrix();
+            }
+        }
+    </script>
+    <canvas></canvas>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottie: State Machine Diff</title>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: 'Syncopate', sans-serif; overflow-x: hidden; }
+        
+        #lottie-fixed {
+            position: fixed; top: 0; right: 0;
+            width: 50vw; height: 100vh;
+            pointer-events: none;
+        }
+
+        section {
+            height: 100vh; width: 50vw;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 0 50px; box-sizing: border-box;
+            border-left: 1px solid #ff0044;
+        }
+
+        .highlight { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+    </style>
+</head>
+<body>
+
+    <div id="lottie-fixed">
+        <lottie-player
+            id="haki-engine"
+            src="https://lottie.host/805307b0-8451-4034-8c83-3605c45330a1/mFv5IBy5W3.json"
+            background="transparent"
+            speed="1"
+            style="width: 100%; height: 100%;"
+            loop>
+        </lottie-player>
+    </div>
+
+    <section data-frame="0,60">
+        <h1>01. <span class="highlight">DORMANT</span></h1>
+        <p>The Will is quiet. Waiting for the spark.</p>
+    </section>
+
+    <section data-frame="61,120">
+        <h1>02. <span class="highlight">SURGE</span></h1>
+        <p>Energy detected. Axon Core engaging.</p>
+    </section>
+
+    <section data-frame="121,180">
+        <h1>03. <span class="highlight">OVERDRIVE</span></h1>
+        <p>Supreme Haki Manifestation Complete.</p>
+    </section>
+
+    <script>
+        const player = document.getElementById('haki-engine');
+        const sections = document.querySelectorAll('section');
+
+
+        const observerOptions = { threshold: 0.6 };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const frames = entry.target.getAttribute('data-frame').split(',');
+
+                    player.playSegments([parseInt(frames[0]), parseInt(frames[1])], true);
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>

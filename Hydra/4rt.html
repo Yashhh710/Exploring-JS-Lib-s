@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HYDRA: SUPREME GLITCH DIFF</title>
+    <script src="https://unpkg.com/hydra-synth"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        #hydra-canvas { width: 100vw; height: 100vh; filter: contrast(150%) brightness(120%); }
+        .boss-ui {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #fff; font-family: 'Syncopate', sans-serif; font-weight: 900;
+            font-size: 8vw; letter-spacing: -5px; pointer-events: none;
+            mix-blend-mode: difference; z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="boss-ui">CONQUEROR</div>
+    <canvas id="hydra-canvas"></canvas>
+
+    <script>
+        const hydra = new Hydra({
+            canvas: document.getElementById("hydra-canvas"),
+            detectAudio: false
+        })
+
+
+
+
+        
+        osc(20, 0.05, 2)
+          .color(0.8, 0, 0) // Blood Red
+          .mult(osc(10, 0.1).kaleid(3))
+          .modulatePixelate(noise(4, 0.5), 150) // The "Hard" Glitch look
+          .add(
+            voronoi(5, 1)
+            .color(0, 0, 0) // Black Lightning Negative Space
+            .thresh(0.5)
+            .modulate(o0, 0.5) // Interaction with previous frames
+          )
+          .repeat(2, 2) // Quadruple the Haki pressure
+          .modulateRotate(src(o0), 0.1) // Recursive rotation warping
+          .scrollX(0.001)
+          .blend(o0, 0.4) // High speed persistence
+          .out()
+    </script>
+</body>
+</html>

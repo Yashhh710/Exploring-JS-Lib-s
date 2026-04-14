@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kaboom Pro: Haki Fix</title>
+    <script src="https://unpkg.com/kaboom@3000.1.17/dist/kaboom.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        #game { width: 800px; height: 600px; border: 2px solid #00f2ff; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
+    </style>
+</head>
+<body>
+    <canvas id="game"></canvas>
+
+<script>
+
+const k = kaboom({
+    canvas: document.getElementById("game"),
+    background: [0, 5, 10],
+});
+
+
+k.scene("main", () => {
+    
+
+    const player = k.add([
+        k.pos(k.center()),
+        k.anchor("center"),
+        k.rect(32, 32, { radius: 4 }),
+        k.color(0, 242, 255),
+        k.area(),
+        k.body(),
+    ]);
+
+
+    k.loop(1, () => {
+        k.add([
+            k.pos(k.rand(0, k.width()), k.rand(0, k.height())),
+            k.anchor("center"),
+            k.circle(10),
+            k.color(255, 0, 68),
+            k.area(),
+            "enemy",
+
+            {
+                update() {
+                    const dir = player.pos.sub(this.pos).unit();
+                    this.move(dir.scale(100));
+                }
+            }
+        ]);
+    });
+
+
+    k.onKeyPress("space", () => {
+        k.shake(10);
+        
+
+        const ring = k.add([
+            k.pos(player.pos),
+            k.anchor("center"),
+            k.circle(0),
+            k.outline(4, k.rgb(255, 255, 255)),
+            k.color(0, 0, 0, 0),
+            k.opacity(1),
+        ]);
+
+        k.tween(0, 300, 0.3, (r) => ring.radius = r, k.easings.outExpo);
+        k.tween(1, 0, 0.3, (o) => ring.opacity = o).onEnd(() => ring.destroy());
+
+
+        k.get("enemy").forEach((enemy) => {
+            if (enemy.pos.dist(player.pos) < 250) {
+                const diff = enemy.pos.sub(player.pos).unit();
+                k.tween(
+                    enemy.pos,
+                    enemy.pos.add(diff.scale(200)),
+                    0.4,
+                    (p) => enemy.pos = p,
+                    k.easings.outExpo
+                );
+            }
+        });
+    });
+
+
+    const SPEED = 320;
+    k.onKeyDown("left", () => player.move(-SPEED, 0));
+    k.onKeyDown("right", () => player.move(SPEED, 0));
+    k.onKeyDown("up", () => player.move(0, -SPEED));
+    k.onKeyDown("down", () => player.move(0, SPEED));
+
+    k.add([
+        k.text("WASH AWAY THE WEAK: [SPACE]", { size: 16 }),
+        k.pos(20, 20),
+    ]);
+});
+
+k.go("main");
+</script>
+</body>
+</html>

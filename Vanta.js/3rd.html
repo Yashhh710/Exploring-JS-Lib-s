@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vanta Pro: Supreme Halo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.halo.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; }
+        #vanta-canvas { width: 100vw; height: 100vh; }
+        .interface-hud {
+            position: absolute; bottom: 50px; right: 50px;
+            color: #ff0044; font-family: 'Orbitron', sans-serif;
+            text-align: right; pointer-events: none;
+            border-right: 4px solid #00f2ff; padding-right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="vanta-canvas"></div>
+    <div class="interface-hud">
+        CORE_VIBRATION: MAXIMAL<br>
+        HALO_RESONANCE: 100%<br>
+        STATUS: CONQUEROR_MODE
+    </div>
+
+<script>
+
+VANTA.HALO({
+  el: "#vanta-canvas",
+  mouseControls: true,
+  touchControls: true,
+  gyroControls: false,
+  minHeight: 200.00,
+  minWidth: 200.00,
+
+  baseColor: 0x0,          // The Void
+  backgroundColor: 0x0,    // Pure Black
+  amplitudeFactor: 1.50,   // How much the ring "vibrates"
+  xOffset: 0.15,           // Position shift
+  yOffset: 0.00,
+  size: 1.50,              // Massive presence
+
+  color1: 0xff0044,        // Red Haki
+  color2: 0x00f2ff         // Cyan Contrast
+});
+</script>
+</body>
+</html>

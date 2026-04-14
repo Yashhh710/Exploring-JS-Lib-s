@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hydra: World Smasher Diff</title>
+    <script src="https://unpkg.com/hydra-synth"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        #hydra-canvas { width: 100vw; height: 100vh; }
+        .glitch-hud {
+            position: absolute; bottom: 40px; right: 40px;
+            color: #fff; font-family: 'Courier New', monospace;
+            text-align: right; z-index: 10; pointer-events: none;
+            text-shadow: 2px 2px #ff0044;
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch-hud">
+        DIMENSION_STATUS: FRACTURED<br>
+        HAKI_INDEX: ERROR_OVERFLOW<br>
+        USER: YASH_TAMBADE
+    </div>
+    <canvas id="hydra-canvas"></canvas>
+
+    <script>
+        const hydra = new Hydra({
+            canvas: document.getElementById("hydra-canvas"),
+            detectAudio: false
+        })
+
+
+
+        osc(40, 0.01, 1)
+          .modulate(noise(3, 0.1))
+          .kaleid(() => 4 + Math.sin(time) * 2) // Shattering fluctuates
+          .color(1, 0, 0.1) // Deep Conqueror Red
+          .contrast(1.4)
+          .add(
+            osc(10, 0.1, 0.5)
+            .kaleid(12)
+            .color(0, 0, 0) // Black Lightning Void
+            .thresh(0.4)
+          )
+          .modulateScrollX(o0, 0.1) // Feed the shatter back into itself
+          .scale(0.9) // Create an "implosion" effect
+          .out()
+    </script>
+</body>
+</html>

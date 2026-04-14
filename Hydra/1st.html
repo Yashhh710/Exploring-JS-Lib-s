@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hydra Pro: Liquid Haki Synthesis</title>
+    <script src="https://unpkg.com/hydra-synth"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        #hydra-canvas { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; }
+        .ui-label {
+            position: absolute; bottom: 30px; left: 30px;
+            color: #ff0044; font-family: 'Courier New', monospace;
+            z-index: 10; border-left: 2px solid #00f2ff; padding-left: 15px;
+            text-shadow: 0 0 10px #ff0044; pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="hydra-canvas"></canvas>
+    <div class="ui-label">
+        SIGNAL: SYNTHETIC_AURA_V1<br>
+        MODE: FEEDBACK_OSCILLATION<br>
+        SOURCE: HYDRA_ENGINE
+    </div>
+
+    <script>
+
+        const hydra = new Hydra({
+            canvas: document.getElementById("hydra-canvas"),
+            detectAudio: false
+        })
+
+
+
+
+
+
+        osc(10, 0.1, 1.2)
+            .color(1, 0, 0.2) // Red Haki Base
+            .rotate(0.1, 0.1)
+            .modulate(osc(20).rotate(0.5)) // Warp with second wave
+            .kaleid(5) // Shatter the geometry
+            .colorama(0.01) // Shift colors slightly
+            .modulatePixelate(noise(3), 100) // Add "Grainy" digital texture
+            .add(osc(5, 0.1, 0.5).color(0, 0.9, 1), 0.5) // Blend with Cyan Will
+            .out()
+    </script>
+</body>
+</html>

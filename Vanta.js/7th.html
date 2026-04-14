@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transcendental: Dimensional Fracture</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        #canvas-container { width: 100vw; height: 100vh; }
+        .system-hud {
+            position: absolute; top: 30px; left: 30px;
+            color: #00f2ff; font-family: 'Courier New', monospace; font-size: 11px;
+            letter-spacing: 2px; border-left: 2px solid #ff0044; padding-left: 15px;
+            text-transform: uppercase; pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="system-hud">
+        STATUS: REALITY_FRACTURE_DETECTED<br>
+        BUFFER: INSTANCED_GEOMETRY_V9<br>
+        HAKI_PRESSURE: SUPREME_TRANSCENDENCE
+    </div>
+    <div id="canvas-container"></div>
+
+<script>
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+
+
+const instanceCount = 200000;
+const baseGeometry = new THREE.BoxGeometry(0.01, 0.01, 0.2);
+const instancedMesh = new THREE.InstancedMesh(baseGeometry, new THREE.MeshBasicMaterial({ color: 0xff0044, transparent: true, opacity: 0.6 }), instanceCount);
+
+const matrix = new THREE.Matrix4();
+const color = new THREE.Color();
+
+for (let i = 0; i < instanceCount; i++) {
+
+    const theta = Math.random() * Math.PI * 2;
+    const r = 2 + Math.random() * 5;
+    const x = Math.cos(theta) * r;
+    const y = Math.sin(theta) * r;
+    const z = (Math.random() - 0.5) * 10;
+
+    matrix.setPosition(x, y, z);
+    instancedMesh.setMatrixAt(i, matrix);
+
+
+    color.setHSL(r > 4 ? 0.5 : 0.0, 1.0, 0.5);
+    instancedMesh.setColorAt(i, color);
+}
+scene.add(instancedMesh);
+
+camera.position.z = 8;
+
+
+function animate(time) {
+    time *= 0.001;
+    
+
+    instancedMesh.rotation.z = time * 0.2;
+    instancedMesh.rotation.y = Math.sin(time * 0.1) * 0.5;
+
+
+    camera.position.x = Math.sin(time * 0.5) * 2;
+    camera.position.y = Math.cos(time * 0.5) * 2;
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>

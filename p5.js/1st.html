@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacker Dragon Follower</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #050508; /* Deep near-black */
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+
+let head;
+let bodySegments = [];
+const numSegments = 20; // Length of the tail
+const segmentDist = 20; // Spacing between body parts
+
+
+let codeParticles = [];
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  
+
+  colorMode(RGB);
+  
+
+  head = createVector(width / 2, height / 2);
+  
+
+  for (let i = 0; i < numSegments; i++) {
+    bodySegments.push(createVector(head.x, head.y));
+  }
+}
+
+function draw() {
+
+  background(5, 5, 8);
+
+
+
+  for (let i = codeParticles.length - 1; i >= 0; i--) {
+    codeParticles[i].update();
+    codeParticles[i].draw();
+    if (codeParticles[i].isDead()) {
+      codeParticles.splice(i, 1);
+    }
+  }
+
+
+
+
+  head.x = lerp(head.x, mouseX, 0.05);
+  head.y = lerp(head.y, mouseY, 0.05);
+
+
+  updateSegment(head, bodySegments[0]);
+
+
+  for (let i = 1; i < bodySegments.length; i++) {
+    updateSegment(bodySegments[i - 1], bodySegments[i]);
+  }
+
+
+
+  for (let i = 0; i < bodySegments.length; i++) {
+    let seg = bodySegments[i];
+    
+
+    let size = map(i, 0, numSegments, 25, 5);
+    
+
+    let r = map(i, 0, numSegments, 255, 100);
+    let g = map(i, 0, numSegments, 50, 0);
+    let b = map(i, 0, numSegments, 50, 0);
+    
+
+    noStroke();
+    fill(r, g, b, 50); // Glow aura
+    circle(seg.x, seg.y, size + 10);
+    
+    fill(r, g, b); // Solid core
+    circle(seg.x, seg.y, size);
+  }
+
+
+
+  let angle = atan2(mouseY - head.y, mouseX - head.x);
+  
+  push();
+  translate(head.x, head.y);
+  rotate(angle);
+  
+
+  noStroke();
+  fill(220, 30, 30); // Bright robotic red
+  rectMode(CENTER);
+  rect(0, 0, 40, 30, 8); // Head chassis
+  
+
+  fill(0, 255, 70); // Matrix green eyes
+  ellipse(10, -8, 10, 6);
+  ellipse(10, 8, 10, 6);
+  pop();
+
+
+  fill(0, 255, 70, 150);
+  textAlign(CENTER);
+  textSize(14);
+  textFont('monospace');
+  text("DRAGON FOLLOWS MOUSE • CLICK TO FIRE CODE", width / 2, height - 30);
+}
+
+
+function updateSegment(leader, follower) {
+
+  let d = dist(leader.x, leader.y, follower.x, follower.y);
+  
+
+  if (d > segmentDist) {
+    let angle = atan2(leader.y - follower.y, leader.x - follower.x);
+
+    follower.x = leader.x - cos(angle) * segmentDist;
+    follower.y = leader.y - sin(angle) * segmentDist;
+  }
+}
+
+
+function mousePressed() {
+
+  let angle = atan2(mouseY - head.y, mouseX - head.x);
+  for(let i=0; i<8; i++){
+    codeParticles.push(new CodeParticle(head.x, head.y, angle));
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+
+class CodeParticle {
+  constructor(x, y, baseAngle) {
+    this.x = x;
+    this.y = y;
+
+    this.vx = cos(baseAngle + random(-0.3, 0.3)) * random(5, 12);
+    this.vy = sin(baseAngle + random(-0.3, 0.3)) * random(5, 12);
+    this.life = 255; // Transparency/Lifespan
+    this.char = random() > 0.5 ? '1' : '0'; // Binary code
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= 4; // Fade out
+  }
+
+  draw() {
+    fill(0, 255, 70, this.life);
+    textFont('monospace');
+    textSize(16);
+    text(this.char, this.x, this.y);
+  }
+
+  isDead() {
+    return this.life <= 0;
+  }
+}
+</script>
+
+</body>
+</html>

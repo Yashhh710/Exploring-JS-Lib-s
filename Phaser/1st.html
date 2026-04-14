@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phaser Pro: Haki Physics</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        #game-ui {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            color: #00f2ff; font-family: 'Courier New', monospace; pointer-events: none;
+            text-shadow: 0 0 10px #00f2ff; z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-ui">COMMAND: [W,A,S,D] TO SAIL | CLICK TO UNLEASH HAKI</div>
+    <div id="phaser-game"></div>
+
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            backgroundColor: '#000510',
+            parent: 'phaser-game',
+            physics: {
+                default: 'arcade',
+                arcade: { gravity: { y: 0 }, debug: false }
+            },
+            scene: { preload: preload, create: create, update: update }
+        };
+
+        const game = new Phaser.Game(config);
+        let player;
+        let cursors;
+        let enemies;
+        let hakiRing;
+
+        function preload() {
+
+            let graphics = this.make.graphics({ x: 0, y: 0, add: false });
+            
+
+            graphics.fillStyle(0xffcc00, 1);
+            graphics.fillTriangle(0, 30, 15, 0, 30, 30);
+            graphics.generateTexture('ship', 30, 30);
+            
+
+            graphics.clear();
+            graphics.fillStyle(0xff0044, 1);
+            graphics.fillRect(0, 0, 20, 20);
+            graphics.generateTexture('target', 20, 20);
+
+
+            graphics.clear();
+            graphics.lineStyle(4, 0xff0044, 1);
+            graphics.strokeCircle(50, 50, 50);
+            graphics.generateTexture('haki', 100, 100);
+        }
+
+        function create() {
+
+            player = this.physics.add.image(window.innerWidth/2, window.innerHeight/2, 'ship');
+            player.setCollideWorldBounds(true);
+            player.setDrag(1000);
+            player.setAngularDrag(1000);
+
+
+            enemies = this.physics.add.group({
+                key: 'target',
+                repeat: 12,
+                setXY: { x: 100, y: 100, stepX: 150 }
+            });
+
+            enemies.children.iterate((child) => {
+                child.setRandomPosition(0, 0, window.innerWidth, window.innerHeight);
+                child.setBounce(1);
+                child.setCollideWorldBounds(true);
+                child.setDrag(50);
+            });
+
+
+            hakiRing = this.add.image(0, 0, 'haki');
+            hakiRing.setScale(0);
+            hakiRing.setAlpha(0);
+
+
+            cursors = this.input.keyboard.createCursorKeys();
+            const keys = this.input.keyboard.addKeys('W,S,A,D');
+
+            this.input.on('pointerdown', unleashHaki, this);
+        }
+
+        function unleashHaki() {
+
+            hakiRing.setPosition(player.x, player.y);
+            hakiRing.setScale(0);
+            hakiRing.setAlpha(1);
+
+            this.tweens.add({
+                targets: hakiRing,
+                scale: 4,
+                alpha: 0,
+                duration: 500,
+                ease: 'Cubic.out'
+            });
+
+
+            enemies.children.iterate((enemy) => {
+                let dist = Phaser.Math.Distance.Between(player.x, player.y, enemy.x, enemy.y);
+                if (dist < 250) {
+                    let angle = Phaser.Math.Angle.Between(player.x, player.y, enemy.x, enemy.y);
+                    this.physics.velocityFromRotation(angle, 600, enemy.body.velocity);
+                }
+            });
+
+
+            this.cameras.main.shake(200, 0.01);
+        }
+
+        function update() {
+
+            const speed = 300;
+            player.setVelocity(0);
+
+            if (cursors.left.isDown) {
+                player.setVelocityX(-speed);
+                player.setAngle(-90);
+            } else if (cursors.right.isDown) {
+                player.setVelocityX(speed);
+                player.setAngle(90);
+            }
+
+            if (cursors.up.isDown) {
+                player.setVelocityY(-speed);
+                player.setAngle(0);
+            } else if (cursors.down.isDown) {
+                player.setVelocityY(speed);
+                player.setAngle(180);
+            }
+        }
+    </script>
+</body>
+</html>

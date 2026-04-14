@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ECharts Pro: Global Haki Impact</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/dist/echarts-gl.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; height: 100vh; }
+        #main { width: 100vw; height: 100vh; }
+        #hud { position: absolute; top: 20px; left: 20px; color: #ff0044; font-family: monospace; z-index: 10; padding: 10px; border: 1px solid #ff0044; background: rgba(0,0,0,0.8); pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="hud">
+        SCANNING_EARTH_SURFACE...<br>
+        WILL_DETECTION: GLOBAL_SCALE<br>
+        MODE: SUPREME_PRESSURE_MAP
+    </div>
+    <div id="main"></div>
+
+<script>
+const chartDom = document.getElementById('main');
+const myChart = echarts.init(chartDom);
+
+
+
+const data = [];
+for (let i = 0; i < 500; i++) {
+    data.push([
+        Math.random() * 360 - 180, // Longitude
+        Math.random() * 180 - 90,  // Latitude
+        Math.random() * 100        // Haki Intensity
+    ]);
+}
+
+
+const option = {
+    backgroundColor: '#000',
+    visualMap: {
+        show: false,
+        min: 0,
+        max: 100,
+        inRange: {
+            color: ['#00f2ff', '#7000ff', '#ff0044'] // Cyan to Purple to Red
+        }
+    },
+    globe: {
+        baseTexture: 'https://echarts.apache.org/examples/data-gl/asset/world.topo.bathy.200401.jpg',
+        heightTexture: 'https://echarts.apache.org/examples/data-gl/asset/world.topo.bathy.200401.jpg',
+        displacementScale: 0.1,
+        shading: 'lambert',
+        environment: '#000',
+        light: {
+            main: { intensity: 1.5, shadow: true },
+            ambient: { intensity: 0.2 }
+        },
+        viewControl: {
+            autoRotate: true,
+            autoRotateSpeed: 2
+        },
+        postEffect: {
+            enable: true,
+            bloom: { intensity: 0.4 }
+        }
+    },
+    series: [{
+        type: 'bar3D', // We use 3D Bars to show "Altitude" of energy
+        coordinateSystem: 'globe',
+        data: data,
+        barSize: 0.6,
+        minHeight: 0.5,
+        shading: 'lambert',
+        label: { show: false }
+    }]
+};
+
+myChart.setOption(option);
+
+
+window.addEventListener('resize', () => myChart.resize());
+</script>
+</body>
+</html>

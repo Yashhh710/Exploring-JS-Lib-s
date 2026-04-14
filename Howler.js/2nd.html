@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Howler Pro: Velocity Audio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; height: 100vh; cursor: crosshair;
+               display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #status-display {
+            position: absolute; top: 20px; left: 20px;
+            color: #ff0044; font-family: monospace; font-size: 12px;
+            border-left: 2px solid #ff0044; padding-left: 10px;
+        }
+        .instruction { color: #555; font-family: sans-serif; letter-spacing: 5px; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="status-display">
+        OBJECT: HAKI_VIBRATION_STREAM<br>
+        MODULATION: VELOCITY_PITCH_BEND<br>
+        STATE: <span id="vel-text">0</span>
+    </div>
+
+    <div class="instruction">MOVE MOUSE TO DISTORT REALITY</div>
+
+<script>
+
+const hakiHum = new Howl({
+    src: ['https://actions.google.com/sounds/v1/science_fiction/low_frequency_vibration.ogg'],
+    loop: true,
+    volume: 0.5,
+    html5: false // Force Web Audio API for high-precision manipulation
+});
+
+let soundId = null;
+let lastX = 0;
+let lastY = 0;
+let velocity = 0;
+
+
+window.addEventListener('mousedown', () => {
+    if (!soundId) {
+        soundId = hakiHum.play();
+        hakiHum.fade(0, 0.5, 1000, soundId);
+    }
+});
+
+
+window.addEventListener('mousemove', (e) => {
+
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    
+
+    velocity += (dist - velocity) * 0.1;
+    
+    lastX = e.clientX;
+    lastY = e.clientY;
+
+    if (soundId) {
+
+
+        const pitchShift = 0.5 + (velocity / 50);
+        const clampedPitch = Math.max(0.5, Math.min(pitchShift, 3.0));
+        
+
+        hakiHum.rate(clampedPitch, soundId);
+        
+
+        document.getElementById('vel-text').innerText = clampedPitch.toFixed(2) + "x";
+    }
+});
+
+
+setInterval(() => {
+    if (velocity > 0.1) {
+        velocity *= 0.95; // Decay
+    }
+}, 50);
+
+</script>
+</body>
+</html>

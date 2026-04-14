@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PURE JS: HAKI SINGULARITY</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        canvas { background: #000; }
+        .stats {
+            position: absolute; top: 20px; left: 20px;
+            color: #ff0044; font-family: monospace; border-left: 2px solid #00f2ff; padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats">ENGINE: PURE_MATH_V1<br>RENDER: NATIVE_CANVAS<br>STATUS: UNSTOPPABLE</div>
+    <canvas id="hakiCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('hakiCanvas');
+const ctx = canvas.getContext('2d');
+
+let width, height;
+const dots = [];
+const dotCount = 500; // Increase for a denser Haki aura
+
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', resize);
+resize();
+
+
+for (let i = 0; i < dotCount; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos((Math.random() * 2) - 1);
+    const distance = 200;
+
+    dots.push({
+        x: distance * Math.sin(phi) * Math.cos(theta),
+        y: distance * Math.sin(phi) * Math.sin(theta),
+        z: distance * Math.cos(phi)
+    });
+}
+
+function rotate(dot, angleX, angleY) {
+
+    let cosY = Math.cos(angleY), sinY = Math.sin(angleY);
+    let x = dot.x * cosY - dot.z * sinY;
+    let z = dot.x * sinY + dot.z * cosY;
+    
+
+    let cosX = Math.cos(angleX), sinX = Math.sin(angleX);
+    let y = dot.y * cosX - z * sinX;
+    z = dot.y * sinX + z * cosX;
+
+    return { x, y, z };
+}
+
+function render() {
+    ctx.clearRect(0, 0, width, height);
+    const time = Date.now() * 0.001;
+
+    dots.forEach(dot => {
+
+        const rotated = rotate(dot, time * 0.5, time * 0.3);
+        
+
+        const perspective = 600 / (600 + rotated.z);
+        const screenX = width / 2 + rotated.x * perspective;
+        const screenY = height / 2 + rotated.y * perspective;
+
+
+        const size = 2 * perspective;
+        const opacity = (rotated.z + 200) / 400; // Depth cue
+        
+        ctx.fillStyle = `rgba(255, 0, 68, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+        ctx.fill();
+
+
+        if(perspective > 1.2) {
+            ctx.fillStyle = `rgba(0, 242, 255, 0.5)`;
+            ctx.fillRect(screenX, screenY, 1, 1);
+        }
+    });
+
+    requestAnimationFrame(render);
+}
+
+render();
+</script>
+</body>
+</html>

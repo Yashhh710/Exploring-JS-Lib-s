@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kaboom Pro: State Machine Haki</title>
+    <script src="https://unpkg.com/kaboom@3000.1.17/dist/kaboom.js"></script>
+    <style>
+        body { margin: 0; background: #000205; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+<script>
+
+const k = kaboom({
+    background: [0, 0, 0],
+    scale: 1,
+});
+
+
+
+function hakiReact() {
+    return {
+        id: "hakiReact",
+        require: ["pos"],
+        state: "idle", // States: "idle", "blasted"
+        update() {
+            if (this.state === "idle") {
+
+                this.pos.y += Math.sin(k.time() * 2) * 0.2;
+            }
+        },
+        blast(force) {
+            this.state = "blasted";
+            k.tween(this.opacity, 0.2, 0.2, (v) => this.opacity = v);
+            k.wait(1, () => {
+                this.state = "idle";
+                k.tween(this.opacity, 1, 0.5, (v) => this.opacity = v);
+            });
+        }
+    }
+}
+
+k.scene("main", () => {
+    
+
+    const player = k.add([
+        k.pos(k.center()),
+        k.anchor("center"),
+        k.circle(24),
+        k.color(255, 255, 255),
+        k.outline(8, k.rgb(0, 242, 255)),
+        k.area(),
+        "player"
+    ]);
+
+
+    for (let i = 0; i < 30; i++) {
+        k.add([
+            k.pos(k.rand(k.width()), k.rand(k.height())),
+            k.anchor("center"),
+            k.rect(20, 20, { radius: 4 }),
+            k.color(255, 0, 68),
+            k.opacity(1),
+            k.area(),
+            hakiReact(), // Injecting our custom Pro Component
+            "target"
+        ]);
+    }
+
+
+    k.onKeyPress("space", () => {
+        k.shake(20);
+        
+
+        const flash = k.add([
+            k.rect(k.width(), k.height()),
+            k.color(255, 255, 255),
+            k.opacity(0.4),
+            k.fixed(),
+        ]);
+        k.tween(0.4, 0, 0.3, (v) => flash.opacity = v).onEnd(() => flash.destroy());
+
+
+        k.get("target").forEach((t) => {
+            const dist = t.pos.dist(player.pos);
+            if (dist < 350) {
+                const dir = t.pos.sub(player.pos).unit();
+                
+
+                t.blast();
+
+
+                k.tween(
+                    t.pos,
+                    t.pos.add(dir.scale(500)),
+                    0.6,
+                    (p) => t.pos = p,
+                    k.easings.outElastic // Adds a professional "snap"
+                );
+            }
+        });
+    });
+
+
+    k.onKeyDown("left", () => player.move(-500, 0));
+    k.onKeyDown("right", () => player.move(500, 0));
+    k.onKeyDown("up", () => player.move(0, -500));
+    k.onKeyDown("down", () => player.move(0, -0)); // Fixed to move down
+    k.onKeyDown("down", () => player.move(0, 500));
+
+    k.add([
+        k.text("CONQUEROR'S WILL: [SPACE]", { size: 20 }),
+        k.pos(20, 20),
+        k.color(0, 242, 255),
+    ]);
+});
+
+k.go("main");
+</script>
+</body>
+</html>  

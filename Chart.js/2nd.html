@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart.js Pro: Real-time Haki Stream</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { margin: 0; background: #000205; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Inter', sans-serif; }
+        .chart-box { width: 800px; height: 400px; background: rgba(0, 242, 255, 0.02); padding: 20px; border: 1px solid #00f2ff33; border-radius: 8px; }
+        #stats { color: #00f2ff; font-family: monospace; font-size: 12px; margin-bottom: 10px; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <div class="chart-box">
+        <div id="stats">LIVE_WAVEFORM_ANALYSIS: <span id="val">0</span>%</div>
+        <canvas id="streamChart"></canvas>
+    </div>
+
+<script>
+const ctx = document.getElementById('streamChart').getContext('2d');
+
+
+
+const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+gradient.addColorStop(0, 'rgba(255, 0, 68, 0.5)');   // High Intensity (Red)
+gradient.addColorStop(0.5, 'rgba(0, 242, 255, 0.2)'); // Mid (Cyan)
+gradient.addColorStop(1, 'rgba(0, 242, 255, 0)');   // Bottom
+
+
+const hakiChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: Array(20).fill(''),
+        datasets: [{
+            label: 'Haki Output',
+            data: Array(20).fill(0),
+            borderColor: '#00f2ff',
+            borderWidth: 3,
+            fill: true,
+            backgroundColor: gradient,
+            tension: 0.4, // Smooth "Buttery" curve
+            pointRadius: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        animation: { duration: 0 }, // Disable default animation for performance
+        scales: {
+            y: { min: 0, max: 100, grid: { color: '#ffffff11' }, ticks: { color: '#00f2ff' } },
+            x: { grid: { display: false } }
+        },
+        plugins: { legend: { display: false } }
+    }
+});
+
+
+function updateStream() {
+
+    const newVal = Math.floor(Math.random() * 40) + 30 + (Math.sin(Date.now() / 500) * 20);
+    
+
+    hakiChart.data.datasets[0].data.push(newVal);
+    hakiChart.data.datasets[0].data.shift();
+    
+
+    hakiChart.data.datasets[0].borderColor = newVal > 70 ? '#ff0044' : '#00f2ff';
+    
+    document.getElementById('val').innerText = Math.floor(newVal);
+    hakiChart.update();
+    
+    requestAnimationFrame(updateStream);
+}
+
+updateStream();
+</script>
+</body>
+</html>

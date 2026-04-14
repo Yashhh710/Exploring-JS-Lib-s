@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart.js Pro: Haki Power Scaling</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { margin: 0; background: #00050a; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Inter', sans-serif; }
+        .chart-container { width: 500px; height: 500px; position: relative; }
+        #ui-label { position: absolute; top: -40px; color: #00f2ff; letter-spacing: 5px; font-weight: bold; width: 100%; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="chart-container">
+        <div id="ui-label">YONKO_STRENGTH_INDEX</div>
+        <canvas id="hakiChart"></canvas>
+    </div>
+
+<script>
+
+
+const shadowPlugin = {
+    id: 'shadowPlugin',
+    beforeDatasetsDraw(chart) {
+        const { ctx } = chart;
+        ctx.save();
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'rgba(0, 242, 255, 0.8)';
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+    },
+    afterDatasetsDraw(chart) {
+        chart.ctx.restore();
+    }
+};
+
+
+const data = {
+    labels: ['Conqueror Haki', 'Armament Haki', 'Observation Haki', 'Physical Power', 'Devil Fruit', 'Endurance'],
+    datasets: [{
+        label: 'Luffy (Gear 5)',
+        data: [98, 92, 95, 90, 99, 96],
+        fill: true,
+        backgroundColor: 'rgba(0, 242, 255, 0.2)',
+        borderColor: '#00f2ff',
+        pointBackgroundColor: '#00f2ff',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#00f2ff'
+    }, {
+        label: 'Shanks',
+        data: [100, 98, 100, 85, 0, 90],
+        fill: true,
+        backgroundColor: 'rgba(255, 0, 68, 0.1)',
+        borderColor: '#ff0044',
+        pointBackgroundColor: '#ff0044',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#ff0044'
+    }]
+};
+
+
+const config = {
+    type: 'radar',
+    data: data,
+    plugins: [shadowPlugin], // Registering the custom glow
+    options: {
+        responsive: true,
+        scales: {
+            r: {
+                angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                pointLabels: { color: '#aaa', font: { size: 12 } },
+                ticks: { display: false },
+                suggestedMin: 0,
+                suggestedMax: 100
+            }
+        },
+        plugins: {
+            legend: { labels: { color: '#fff', font: { family: 'monospace' } } }
+        }
+    }
+};
+
+new Chart(document.getElementById('hakiChart'), config);
+</script>
+</body>
+</html>

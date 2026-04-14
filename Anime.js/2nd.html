@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anime.js Gear 5 Reveal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
+
+        body {
+            margin: 0;
+            background: #fff; /* White out for Gear 5 */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Bungee', cursive;
+        }
+
+        .text-container {
+            font-size: 5rem;
+            color: #333;
+            display: flex;
+            gap: 5px;
+        }
+
+        .letter {
+            display: inline-block;
+            transform-origin: bottom center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="text-container">
+        <div id="target">GEAR FIVE</div>
+    </div>
+
+    <script>
+
+        const target = document.getElementById('target');
+        const text = target.innerText;
+        target.innerHTML = text.split('').map(char => 
+            `<span class="letter">${char === ' ' ? '&nbsp;' : char}</span>`
+        ).join('');
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.letter',
+                translateY: [0, -100, 0],
+                scaleY: [1, 0.5, 1.2, 1],
+                scaleX: [1, 1.5, 0.8, 1],
+                rotateZ: () => anime.random(-20, 20),
+                duration: 800,
+                delay: anime.stagger(100),
+                easing: 'easeOutElastic(1, .6)'
+            })
+            .add({
+                targets: '.letter',
+                opacity: [1, 0],
+                scale: 0,
+                filter: 'blur(20px)',
+                duration: 500,
+                delay: anime.stagger(50, {from: 'center'}),
+                easing: 'easeInExpo'
+            });
+    </script>
+</body>
+</html>

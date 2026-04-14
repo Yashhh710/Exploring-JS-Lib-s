@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FINAL BOSS: CONSTELLATION DIFF</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; cursor: crosshair; }
+        canvas { display: block; }
+        .hud {
+            position: absolute; top: 20px; left: 20px;
+            color: #00f2ff; font-family: 'Courier New', monospace;
+            border-left: 3px solid #ff0044; padding-left: 15px;
+            text-transform: uppercase; pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="hud">
+        DOMAIN: CONQUEROR_NET<br>
+        PHYSICS: PROXIMITY_LINK_V4<br>
+        USER: YASH_TAMBADE
+    </div>
+    <canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let particles = [];
+const particleCount = 120;
+const connectionDistance = 150;
+const mouse = { x: null, y: null, radius: 200 };
+
+function init() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    particles = [];
+    for (let i = 0; i < particleCount; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: Math.random() * 2 + 1
+        });
+    }
+}
+
+window.addEventListener('mousemove', (e) => {
+    mouse.x = e.x;
+    mouse.y = e.y;
+});
+
+window.addEventListener('resize', init);
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+
+        let dxMouse = mouse.x - p.x;
+        let dyMouse = mouse.y - p.y;
+        let distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+        if (distMouse < mouse.radius) {
+            p.x -= dxMouse * 0.02;
+            p.y -= dyMouse * 0.02;
+        }
+
+
+        for (let j = i + 1; j < particles.length; j++) {
+            let p2 = particles[j];
+            let dx = p.x - p2.x;
+            let dy = p.y - p2.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < connectionDistance) {
+
+                let alpha = 1 - (dist / connectionDistance);
+                ctx.strokeStyle = `rgba(255, 0, 68, ${alpha})`; // Conqueror Red
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            }
+        }
+
+
+        ctx.fillStyle = '#00f2ff';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    requestAnimationFrame(animate);
+}
+
+init();
+animate();
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PlayCanvas Pro: Shader Edition</title>
+    <script src="https://code.playcanvas.com/playcanvas-stable.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+        canvas { width: 100vw; height: 100vh; display: block; }
+        #ui { position: absolute; top: 20px; width: 100%; text-align: center; color: #ff0044; font-family: monospace; letter-spacing: 4px; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div id="ui">SYSTEM: KENBUNSHOKU ACTIVATED</div>
+    <canvas id="application"></canvas>
+
+    <script>
+        const canvas = document.getElementById('application');
+        const app = new pc.Application(canvas, {});
+        app.start();
+
+
+        app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
+        app.setCanvasResolution(pc.RESOLUTION_AUTO);
+
+        const camera = new pc.Entity();
+        camera.addComponent('camera', { clearColor: new pc.Color(0, 0, 0) });
+        camera.setPosition(0, 4, 8);
+        camera.setEulerAngles(-25, 0, 0);
+        app.root.addChild(camera);
+
+
+        const plane = new pc.Entity();
+        plane.addComponent('render', { type: 'plane' });
+        plane.setLocalScale(20, 1, 20);
+        app.root.addChild(plane);
+
+
+
+        const material = new pc.StandardMaterial();
+        material.emissive = new pc.Color(1, 0, 0.2);
+        material.useLighting = false;
+
+
+        const vertexShader = `
+            attribute vec3 vertex_position;
+            uniform mat4 matrix_model;
+            uniform mat4 matrix_viewProjection;
+            uniform float uTime;
+
+            varying float vHeight;
+
+            void main(void) {
+                vec4 pos = matrix_model * vec4(vertex_position, 1.0);
+                
+
+                float dist = length(pos.xz);
+                float wave = sin(dist - uTime * 3.0) * 0.4;
+                pos.y += wave;
+                
+                vHeight = wave; // Pass to fragment shader
+                gl_Position = matrix_viewProjection * pos;
+            }
+        `;
+
+        const fragmentShader = `
+            precision mediump float;
+            varying float vHeight;
+            void main(void) {
+
+                gl_FragColor = vec4(1.0, 0.0, 0.2 + vHeight, 1.0);
+            }
+        `;
+
+
+        const shaderDefinition = {
+            attributes: { vertex_position: pc.SEMANTIC_POSITION },
+            vshader: vertexShader,
+            fshader: fragmentShader
+        };
+
+        const shader = new pc.Shader(app.graphicsDevice, shaderDefinition);
+        material.shader = shader;
+        material.update();
+        plane.render.meshInstances[0].material = material;
+
+
+        let time = 0;
+        app.on('update', (dt) => {
+            time += dt;
+
+            app.graphicsDevice.scope.get('uTime').setValue(time);
+        });
+
+        window.addEventListener('resize', () => app.resizeCanvas());
+    </script>
+</body>
+</html>

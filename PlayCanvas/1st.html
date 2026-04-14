@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CANVAS_PLAY: HAKI_FLOW</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; cursor: none; }
+        canvas { display: block; }
+        .controls {
+            position: absolute; top: 20px; left: 20px;
+            color: #ff0044; font-family: 'Syncopate', sans-serif;
+            border-left: 2px solid #00f2ff; padding-left: 15px;
+            pointer-events: none; font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        INPUT: MOUSE_FLOW<br>
+        PARTICLES: 2000<br>
+        POWER: CONQUEROR_LEVEL
+    </div>
+    <canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let particles = [];
+const mouse = { x: -100, y: -100, radius: 150 };
+
+function init() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    particles = [];
+    for (let i = 0; i < 2000; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: 0,
+            vy: 0,
+            acc: 0.02 + Math.random() * 0.05,
+            color: Math.random() > 0.95 ? '#00f2ff' : '#ff0044'
+        });
+    }
+}
+
+window.addEventListener('mousemove', e => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
+
+function animate() {
+    // Persistent trail effect
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+        // Calculate vector toward mouse
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < mouse.radius) {
+            // "The Haki Influence" - particles swerve toward your cursor
+            const angle = Math.atan2(dy, dx);
+            p.vx += Math.cos(angle) * p.acc * 2;
+            p.vy += Math.sin(angle) * p.acc * 2;
+        } else {
+            // Natural drift
+            p.vx += (Math.random() - 0.5) * 0.1;
+            p.vy += (Math.random() - 0.5) * 0.1;
+        }
+
+        p.x += p.vx;
+        p.y += p.vy;
+        
+        // Friction - keeps things smooth
+        p.vx *= 0.98;
+        p.vy *= 0.98;
+
+        // Wrap around edges
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        // Draw particle
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 1.5, 1.5);
+    });
+
+    // Cursor Glow
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = '#00f2ff';
+    ctx.strokeStyle = '#00f2ff';
+    ctx.strokeRect(mouse.x - 5, mouse.y - 5, 10, 10);
+    ctx.shadowBlur = 0;
+
+    requestAnimationFrame(animate);
+}
+
+window.addEventListener('resize', init);
+init();
+animate();
+</script>
+</body>
+</html>

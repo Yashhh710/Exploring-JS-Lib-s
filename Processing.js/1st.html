@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Processing.js Particle Web</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.6.6/processing.min.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #000; 
+        }
+        canvas { 
+            display: block; 
+            outline: none; 
+        }
+    </style>
+</head>
+<body>
+
+    <script type="application/processing">
+        ArrayList<Particle> particles;
+
+        void setup() {
+            size(window.innerWidth, window.innerHeight);
+            particles = new ArrayList<Particle>();
+            smooth();
+        }
+
+        void draw() {
+
+            fill(0, 20); 
+            rect(0, 0, width, height);
+
+
+            if (mouseX != 0 || mouseY != 0) {
+                for (int i = 0; i < 2; i++) {
+                    particles.add(new Particle(mouseX, mouseY));
+                }
+            }
+
+
+            for (int i = particles.size()-1; i >= 0; i--) {
+                Particle p = particles.get(i);
+                p.run();
+                if (p.isDead()) {
+                    particles.remove(i);
+                }
+            }
+        }
+
+
+        class Particle {
+            PVector loc;
+            PVector vel;
+            PVector acc;
+            float life;
+            color c;
+
+            Particle(float x, float y) {
+                loc = new PVector(x, y);
+                vel = new PVector(random(-1, 1), random(-1, 1));
+                acc = new PVector(random(-0.05, 0.05), random(-0.05, 0.05));
+                life = 255;
+
+                c = color(random(100, 255), random(100, 255), 255);
+            }
+
+            void run() {
+                update();
+                display();
+            }
+
+            void update() {
+                vel.add(acc);
+                loc.add(vel);
+                life -= 4.0; // Fade speed
+            }
+
+            void display() {
+                noStroke();
+                fill(c, life);
+                ellipse(loc.x, loc.y, life/10, life/10);
+            }
+
+            boolean isDead() {
+                return (life <= 0);
+            }
+        }
+    </script>
+    <canvas id="pjs"></canvas>
+
+</body>
+</html>

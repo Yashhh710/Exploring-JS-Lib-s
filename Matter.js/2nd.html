@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matter.js Pro: Liquid Haki Fixed</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; background: #000205; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        canvas { box-shadow: 0 0 40px rgba(255, 0, 68, 0.3); cursor: none; }
+    </style>
+</head>
+<body>
+
+<script>
+class FinalHakiScene extends Phaser.Scene {
+    constructor() {
+        super('FinalHakiScene');
+    }
+
+    create() {
+
+        this.matter.world.setBounds();
+        
+
+        this.anchor = this.matter.add.circle(400, 300, 5, { 
+            isStatic: true, 
+            isSensor: true 
+        });
+
+
+        this.nodes = [];
+        let previousBody = this.anchor;
+
+        for (let i = 0; i < 20; i++) {
+
+            const node = this.matter.add.circle(400, 300 + (i * 10), 4, {
+                frictionAir: 0.08,
+                mass: 0.5,
+                collisionFilter: { group: -1 } // Stops links from hitting each other
+            });
+
+
+            this.matter.add.constraint(previousBody, node, 15, 0.6, {
+                render: { visible: false }
+            });
+
+            this.nodes.push(node);
+            previousBody = node;
+        }
+
+
+        this.graphics = this.add.graphics();
+    }
+
+    update() {
+
+        this.anchor.position.x = this.input.activePointer.x;
+        this.anchor.position.y = this.input.activePointer.y;
+
+
+        this.graphics.clear();
+        
+
+        this.graphics.lineStyle(6, 0xff0044, 0.2);
+        this.drawCurve();
+        
+        this.graphics.lineStyle(2, 0xff0044, 1);
+        this.drawCurve();
+    }
+
+    drawCurve() {
+        this.graphics.beginPath();
+        this.graphics.moveTo(this.anchor.position.x, this.anchor.position.y);
+        
+        this.nodes.forEach(node => {
+            this.graphics.lineTo(node.position.x, node.position.y);
+        });
+        
+        this.graphics.strokePath();
+    }
+}
+
+
+const config = {
+    type: Phaser.AUTO,
+    width: 1200,
+    height: 700,
+    backgroundColor: '#000205',
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
+    physics: {
+        default: 'matter',
+        matter: { 
+            gravity: { y: 0.5 },
+            enableSleeping: false,
+            debug: false 
+        }
+    },
+    scene: FinalHakiScene
+};
+
+
+window.addEventListener('load', () => {
+    new Phaser.Game(config);
+});
+</script>
+</body>
+</html>

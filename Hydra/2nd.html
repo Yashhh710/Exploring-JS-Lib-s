@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hydra: Gear 5 Flow</title>
+    <script src="https://unpkg.com/hydra-synth"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        #hydra-canvas { width: 100vw; height: 100vh; }
+        .ui {
+            position: absolute; top: 20px; left: 20px;
+            color: #ff0044; font-family: monospace; font-size: 10px;
+            letter-spacing: 2px; border-left: 1px solid #ff0044; padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="ui">GEAR_STATE: ACTIVATED<br>FLOW: FEEDBACK_V3</div>
+    <canvas id="hydra-canvas"></canvas>
+
+    <script>
+        const hydra = new Hydra({
+            canvas: document.getElementById("hydra-canvas"),
+            detectAudio: false
+        })
+
+
+
+        src(o0)
+          .modulate(noise(3), 0.005) // Reality warping
+          .layer(
+            osc(5, 0.1, 0.8)
+              .mask(voronoi(8, 0.5).modulate(noise(2))) // Crackling lightning mask
+              .color(1, 0, 0.1) // Conqueror Red
+          )
+          .scrollX(0.001)
+          .rotate(0.001)
+          .scale(1.01) // The "Infinite Expansion" effect
+          .blend(o0, 0.9) // 90% persistence creates the liquid trail
+          .out()
+    </script>
+</body>
+</html>

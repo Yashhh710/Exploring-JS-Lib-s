@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>REGL: GPU_SHADER_DIFF</title>
+    <script src="https://npmcdn.com/regl/dist/regl.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        canvas { width: 100vw; height: 100vh; }
+        .hud {
+            position: absolute; top: 30px; left: 30px;
+            color: #ff0044; font-family: 'Syncopate', sans-serif;
+            border-left: 2px solid #00f2ff; padding-left: 15px;
+            text-transform: uppercase; font-size: 10px; pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="hud">
+        CORE: REGL_V1_COMMAND<br>
+        PIPELINE: GPU_FRAGMENT_SHADER<br>
+        AURA: CONQUEROR_GLSL
+    </div>
+    <script>
+        const regl = createREGL()
+
+
+
+        const drawHaki = regl({
+            frag: `
+            precision highp float;
+            uniform float time;
+            uniform vec2 resolution;
+            varying vec2 uv;
+
+            void main() {
+                vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+                float d = length(p);
+                
+
+                float pulse = sin(d * 10.0 - time * 5.0) * 0.5 + 0.5;
+                vec3 color = vec3(1.0, 0.0, 0.2) * pulse; // Red Base
+                
+
+                float lightning = step(0.98, sin(p.x * 20.0 + time) * cos(p.y * 20.0 - time));
+                color -= vec3(lightning);
+
+
+                color += vec3(0.0, 0.9, 1.0) * (0.1 / d);
+
+                gl_FragColor = vec4(color, 1.0);
+            }`,
+
+            vert: `
+            precision highp float;
+            attribute vec2 position;
+            varying vec2 uv;
+            void main() {
+                uv = position;
+                gl_Position = vec4(position, 0, 1);
+            }`,
+
+            attributes: {
+                position: [[-1, -1], [1, -1], [-1, 1], [-1, 1], [1, -1], [1, 1]]
+            },
+
+            uniforms: {
+                time: ({tick}) => tick * 0.02,
+                resolution: ({viewportWidth, viewportHeight}) => [viewportWidth, viewportHeight]
+            },
+
+            count: 6
+        })
+
+        regl.frame(() => {
+            regl.clear({ color: [0, 0, 0, 1] })
+            drawHaki()
+        })
+    </script>
+</body>
+</html>

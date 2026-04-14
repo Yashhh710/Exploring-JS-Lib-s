@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced Haki: Pure HTML</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background: #020202; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden;
+        }
+        
+        .haki-btn {
+            background: #fff;
+            color: #000;
+            padding: 24px 60px;
+            font-size: 1.8rem;
+            font-weight: 900;
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s;
+            user-select: none;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* The Purple Haki Aura */
+        .aura {
+            position: absolute;
+            inset: -5px;
+            border: 3px solid #9d4edd;
+            border-radius: 14px;
+            opacity: 0;
+            pointer-events: none;
+            filter: blur(4px);
+        }
+
+        .impact-flash {
+            position: fixed;
+            inset: 0;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="impact-flash" id="flash"></div>
+    
+    <div class="haki-btn" id="btn">
+        <div class="aura" id="aura"></div>
+        <span id="text">ENMA RELEASE</span>
+    </div>
+
+    <script>
+        const btn = document.getElementById('btn');
+        const aura = document.getElementById('aura');
+        const flash = document.getElementById('flash');
+        const text = document.getElementById('text');
+        let active = false;
+
+
+        const animateRubber = (target, scale, radius) => {
+            target.animate([
+                { transform: `scale(${scale})`, borderRadius: radius }
+            ], {
+                duration: 400,
+                easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', // Custom Spring Easing
+                fill: 'forwards'
+            });
+        };
+
+        btn.addEventListener('mousedown', () => {
+            animateRubber(btn, 0.8, "30px");
+        });
+
+        btn.addEventListener('mouseup', () => {
+            active = !active;
+            
+
+            animateRubber(btn, 1.1, "12px");
+
+
+            flash.animate([
+                { opacity: 0.8 }, { opacity: 0 }
+            ], { duration: 150 });
+
+
+            if (active) {
+                btn.style.background = "#000";
+                btn.style.color = "#9d4edd";
+                text.innerText = "HAKI INFUSED";
+                
+                aura.animate([
+                    { opacity: 0, scale: 1 },
+                    { opacity: 0.8, scale: 1.4 },
+                    { opacity: 0, scale: 1.8 }
+                ], {
+                    duration: 800,
+                    iterations: Infinity,
+                    easing: 'ease-out'
+                });
+            } else {
+                btn.style.background = "#fff";
+                btn.style.color = "#000";
+                text.innerText = "ENMA RELEASE";
+                aura.getAnimations().forEach(anim => anim.cancel());
+                aura.style.opacity = "0";
+            }
+        });
+
+        btn.addEventListener('mouseenter', () => animateRubber(btn, 1.05, "12px"));
+        btn.addEventListener('mouseleave', () => animateRubber(btn, 1, "12px"));
+    </script>
+</body>
+</html>

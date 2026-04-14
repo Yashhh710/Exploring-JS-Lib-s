@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tone.js Pro: Haki Sequencer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        body { margin: 0; background: #000; color: #00f2ff; font-family: 'Inter', sans-serif; 
+               display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .panel { padding: 40px; border: 1px solid #00f2ff33; background: rgba(0, 242, 255, 0.05); backdrop-filter: blur(10px); border-radius: 20px; text-align: center; }
+        #start-engine { padding: 15px 40px; background: transparent; border: 2px solid #00f2ff; color: #00f2ff; cursor: pointer; font-weight: bold; letter-spacing: 2px; }
+        #start-engine.active { background: #00f2ff; color: #000; box-shadow: 0 0 30px #00f2ff; }
+        .status { margin-top: 20px; font-size: 10px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+    <div class="panel">
+        <h1 style="margin-bottom: 30px; font-style: italic;">GRAND LINE AUDIO ENGINE</h1>
+        <button id="start-engine">ACTIVATE GEAR 5</button>
+        <div class="status" id="status">ENGINE: STANDBY</div>
+    </div>
+
+<script>
+
+const reverb = new Tone.Reverb({ decay: 4, wet: 0.5 }).toDestination();
+const delay = new Tone.FeedbackDelay("8n", 0.5).connect(reverb);
+
+
+const polySynth = new Tone.PolySynth(Tone.Synth, {
+    oscillator: { type: "sawtooth8" }, // "Fat" sounding oscillator
+    envelope: { attack: 0.1, release: 2 }
+}).connect(delay);
+
+
+const drum = new Tone.MembraneSynth({
+    pitchDecay: 0.05,
+    octaves: 10,
+    oscillator: { type: "sine" }
+}).connect(reverb);
+
+
+const drumPattern = ["C1", ["C1", "C1"], "C1", "C1"]; // A rhythmic heartbeat
+const loop = new Tone.Sequence((time, note) => {
+    drum.triggerAttackRelease(note, "8n", time);
+}, drumPattern, "4n");
+
+
+const btn = document.getElementById("start-engine");
+let isActive = false;
+
+btn.addEventListener("click", async () => {
+    await Tone.start();
+    
+    if (!isActive) {
+
+        Tone.Transport.bpm.value = 140;
+        Tone.Transport.start();
+        loop.start(0);
+        
+
+        polySynth.triggerAttack(["C2", "Db2", "G2"], Tone.now());
+        
+        btn.innerText = "DEACTIVATE";
+        btn.classList.add("active");
+        document.getElementById("status").innerText = "STATUS: EMITTING CONQUEROR'S WILL";
+        isActive = true;
+    } else {
+
+        Tone.Transport.stop();
+        loop.stop();
+        polySynth.releaseAll();
+        
+        btn.innerText = "ACTIVATE GEAR 5";
+        btn.classList.remove("active");
+        document.getElementById("status").innerText = "ENGINE: STANDBY";
+        isActive = false;
+    }
+});
+</script>
+</body>
+</html>

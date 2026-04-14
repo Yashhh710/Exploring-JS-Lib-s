@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PHSYICS: CONQUEROR_PRESSURE</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; cursor: none; }
+        canvas { display: block; }
+        .hud-ui {
+            position: absolute; top: 20px; right: 20px;
+            color: #ff0044; font-family: monospace; font-size: 12px;
+            text-align: right; border-right: 3px solid #00f2ff; padding-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hud-ui">
+        SIGNAL: SUPREME_WILL_V2<br>
+        FIELD: VECTOR_DISPLACEMENT<br>
+        STATUS: UNSTABLE
+    </div>
+    <canvas id="hakiCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('hakiCanvas');
+const ctx = canvas.getContext('2d');
+
+let particles = [];
+const mouse = { x: -100, y: -100, active: false };
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', resize);
+window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.active = true;
+});
+
+class HakiParticle {
+    constructor() {
+        this.reset();
+    }
+    reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 2;
+        this.vy = (Math.random() - 0.5) * 2;
+        this.history = [];
+        this.maxLength = 5 + Math.random() * 15;
+    }
+    update() {
+        this.history.push({x: this.x, y: this.y});
+        if (this.history.length > this.maxLength) this.history.shift();
+
+
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < 200) {
+            const force = (200 - dist) / 200;
+            this.vx -= dx * force * 0.1; // Pull in or push out
+            this.vy -= dy * force * 0.1;
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= 0.96; // Friction
+        this.vy *= 0.96;
+
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+            this.reset();
+        }
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.strokeStyle = Math.random() > 0.9 ? '#00f2ff' : '#ff0044';
+        ctx.lineWidth = 0.5;
+        for(let i=0; i<this.history.length; i++) {
+            const p = this.history[i];
+            i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+    }
+}
+
+for(let i=0; i<300; i++) particles.push(new HakiParticle());
+
+function animate() {
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+
+
+    ctx.strokeStyle = '#00f2ff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, 15, 0, Math.PI * 2);
+    ctx.stroke();
+
+    requestAnimationFrame(animate);
+}
+
+resize();
+animate();
+</script>
+</body>
+</html>

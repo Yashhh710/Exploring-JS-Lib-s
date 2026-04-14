@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monochrome Ink Dragon</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #e0ddd5; /* Background color from image */
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+/**
+ * INK DRAGON
+ * Reconstructing the exact visual style from the reference image.
+ */
+
+let segments = [];
+const numSegments = 80; // More segments for a long tail
+const segmentDist = 14;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  
+
+  for (let i = 0; i < numSegments; i++) {
+    segments.push({
+      pos: createVector(width / 2, height / 2),
+      angle: 0,
+      size: map(i, 0, numSegments, 20, 1)
+    });
+  }
+}
+
+function draw() {
+  background(224, 221, 213); // Solid tan background
+
+
+  let head = segments[0];
+  head.pos.x = lerp(head.pos.x, mouseX, 0.1);
+  head.pos.y = lerp(head.pos.y, mouseY, 0.1);
+  
+  for (let i = 1; i < segments.length; i++) {
+    let leader = segments[i - 1].pos;
+    let current = segments[i].pos;
+    
+    let angle = atan2(leader.y - current.y, leader.x - current.x);
+    segments[i].angle = angle;
+    
+    current.x = leader.x - cos(angle) * segmentDist;
+    current.y = leader.y - sin(angle) * segmentDist;
+  }
+
+
+  
+
+
+  drawWings(15, 120); // First set
+  drawWings(35, 90);  // Second set
+
+
+  for (let i = segments.length - 1; i >= 1; i--) {
+    drawRibbedSegment(i);
+  }
+
+
+  drawSmallHead(segments[0]);
+}
+
+function drawRibbedSegment(i) {
+  let seg = segments[i];
+  let opacity = map(i, 0, numSegments, 255, 30);
+  
+  push();
+  translate(seg.pos.x, seg.pos.y);
+  rotate(seg.angle);
+  
+  fill(0, opacity);
+  noStroke();
+  
+
+  let w = seg.size * 1.5;
+  let h = seg.size * 0.8;
+  
+  beginShape();
+  vertex(h, 0);
+  vertex(-h, w);
+  vertex(-h * 0.5, 0);
+  vertex(-h, -w);
+  endShape(CLOSE);
+  
+  pop();
+}
+
+function drawWings(index, span) {
+  if (index >= segments.length) return;
+  let seg = segments[index];
+  
+  push();
+  translate(seg.pos.x, seg.pos.y);
+  rotate(seg.angle);
+  
+  noFill();
+  stroke(30, 80); // Faint grey/black lines
+  strokeWeight(1.2);
+  
+
+  let numRibs = 15;
+  for (let i = 0; i < numRibs; i++) {
+    let angleOffset = map(i, 0, numRibs, -PI/2, PI/2);
+    let s = span * map(i, 0, numRibs, 0.6, 1.2);
+    
+
+    beginShape();
+    vertex(0, 0);
+    bezierVertex(-20, -s/2, -40, -s, -index, -s);
+    endShape();
+
+
+    beginShape();
+    vertex(0, 0);
+    bezierVertex(-20, s/2, -40, s, -index, s);
+    endShape();
+  }
+  
+  pop();
+}
+
+function drawSmallHead(head) {
+  push();
+  translate(head.pos.x, head.pos.y);
+  rotate(head.angle);
+  
+  fill(0);
+  noStroke();
+  
+
+  beginShape();
+  vertex(25, 0);
+  vertex(5, 10);
+  vertex(-10, 8);
+  vertex(-10, -8);
+  vertex(5, -10);
+  endShape(CLOSE);
+  
+
+  fill(255, 100);
+  ellipse(10, -4, 4, 3);
+  ellipse(10, 4, 4, 3);
+  
+  pop();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+
+</body>
+</html>

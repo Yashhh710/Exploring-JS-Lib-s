@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Babylon.js: Observation Haki HUD</title>
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+    <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <style>
+        html, body { overflow: hidden; width: 100%; height: 100%; margin: 0; background: #000; }
+        #renderCanvas { width: 100%; height: 100%; outline: none; }
+        .hud-ui {
+            position: absolute; top: 20px; left: 20px;
+            color: #ff0055; font-family: 'monospace';
+            border-left: 3px solid #ff0055; padding-left: 15px;
+            pointer-events: none; text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="hud-ui">
+        <b>System: Kenbunshoku</b><br>
+        Targeting: Active<br>
+        Range: 5000m
+    </div>
+    <canvas id="renderCanvas"></canvas>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById("renderCanvas");
+            const engine = new BABYLON.Engine(canvas, true);
+
+            const createScene = function () {
+                const scene = new BABYLON.Scene(engine);
+                scene.clearColor = new BABYLON.Color3(0, 0, 0);
+
+
+                const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 20, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+                camera.lowerRadiusLimit = 10;
+                camera.upperRadiusLimit = 40;
+
+
+                const dome = BABYLON.MeshBuilder.CreateSphere("dome", {diameter: 40, sideOrientation: BABYLON.Mesh.BACKSIDE}, scene);
+                const domeMat = new BABYLON.GridMaterial("domeMat", scene);
+                domeMat.mainColor = new BABYLON.Color3(0.05, 0, 0.05);
+                domeMat.lineColor = new BABYLON.Color3(1, 0, 0.3);
+                domeMat.gridRatio = 5;
+                domeMat.opacity = 0.2;
+                dome.material = domeMat;
+
+
+                const player = BABYLON.MeshBuilder.CreateBox("player", {size: 1}, scene);
+                const playerMat = new BABYLON.StandardMaterial("pMat", scene);
+                playerMat.emissiveColor = new BABYLON.Color3(0, 1, 1);
+                player.material = playerMat;
+
+
+                const createBlip = (x, z) => {
+                    const blip = BABYLON.MeshBuilder.CreateCylinder("blip", {diameter: 0.5, height: 4}, scene);
+                    blip.position.set(x, 0, z);
+                    const blipMat = new BABYLON.StandardMaterial("bMat", scene);
+                    blipMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
+                    blipMat.alpha = 0.5;
+                    blip.material = blipMat;
+                    return blip;
+                };
+
+                const enemies = [createBlip(5, 8), createBlip(-10, -5), createBlip(8, -12)];
+
+
+                const glow = new BABYLON.GlowLayer("glow", scene);
+                glow.intensity = 1.2;
+
+
+                let time = 0;
+                scene.registerBeforeRender(() => {
+                    time += 0.02;
+                    player.rotation.y += 0.05;
+                    
+
+                    enemies.forEach(e => {
+                        e.scaling.y = 1 + Math.sin(time * 5) * 0.5;
+                        e.material.alpha = 0.3 + Math.sin(time * 5) * 0.2;
+                    });
+
+
+                    dome.rotation.y += 0.002;
+                });
+
+                return scene;
+            };
+
+            const scene = createScene();
+            engine.runRenderLoop(() => scene.render());
+            window.addEventListener("resize", () => engine.resize());
+        });
+    </script>
+</body>
+</html>

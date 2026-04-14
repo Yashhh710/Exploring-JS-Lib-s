@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vanta Pro: Haki Void</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+        #vanta-canvas { width: 100vw; height: 100vh; }
+        .hero-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #fff; font-family: 'Inter', sans-serif; text-align: center;
+            pointer-events: none; text-transform: uppercase; letter-spacing: 10px;
+            text-shadow: 0 0 20px #ff0044;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="vanta-canvas"></div>
+    <div class="hero-text">
+        <h1>Supreme Aura</h1>
+        <p style="font-size: 12px; letter-spacing: 2px; color: #00f2ff;">Advanced Neural Presence Detected</p>
+    </div>
+
+<script>
+
+VANTA.NET({
+  el: "#vanta-canvas",
+  mouseControls: true,
+  touchControls: true,
+  gyroControls: false,
+  minHeight: 200.00,
+  minWidth: 200.00,
+  scale: 1.00,
+  scaleMobile: 1.00,
+
+  color: 0xff0044,     // Primary: Conqueror Red
+  backgroundColor: 0x0, // Deep Void Black
+  points: 15.00,       // Density of the will
+  maxDistance: 25.00,  // How far the Haki reaches
+  spacing: 15.00,      // Tightness of the grid
+  showDots: true       // "Aura" particles
+});
+</script>
+</body>
+</html>

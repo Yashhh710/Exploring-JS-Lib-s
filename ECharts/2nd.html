@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ECharts Pro: 3D Haki Topography</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/dist/echarts-gl.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; height: 100vh; }
+        #main { width: 100vw; height: 100vh; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #ff0044; font-family: monospace; z-index: 10; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        OBJECT: HAKI_TERRAIN_MAPPER<br>
+        RENDER_ENGINE: WEBGL_3D_SURFACE<br>
+        STATUS: STABLE
+    </div>
+    <div id="main"></div>
+
+<script>
+const chartDom = document.getElementById('main');
+const myChart = echarts.init(chartDom);
+
+
+function generateData(t) {
+    let data = [];
+    for (let i = 0; i <= 20; i++) {
+        for (let j = 0; j <= 20; j++) {
+
+            let z = Math.sin(i / 3 + t) * Math.cos(j / 3 + t) * 2;
+            data.push([i, j, z]);
+        }
+    }
+    return data;
+}
+
+
+const option = {
+    tooltip: {},
+    backgroundColor: '#000',
+    visualMap: {
+        show: false,
+        min: -2,
+        max: 2,
+        inRange: {
+            color: ['#00f2ff', '#7000ff', '#ff0044'] // Cyan to Purple to Red
+        }
+    },
+    xAxis3D: { type: 'value', splitLine: { show: false } },
+    yAxis3D: { type: 'value', splitLine: { show: false } },
+    zAxis3D: { type: 'value', min: -4, max: 4, splitLine: { show: false } },
+    grid3D: {
+        viewControl: {
+            autoRotate: true, // Cinematic rotation
+            beta: 10
+        },
+        postEffect: {
+            enable: true, // Pro: Bloom effect
+            bloom: { intensity: 0.2 }
+        },
+        light: {
+            main: { intensity: 1.2, shadow: true },
+            ambient: { intensity: 0.3 }
+        }
+    },
+    series: [{
+        type: 'surface',
+        data: generateData(0),
+        shading: 'lambert',
+        wireframe: { show: true, lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+    }]
+};
+
+myChart.setOption(option);
+
+
+let timer = 0;
+setInterval(() => {
+    timer += 0.1;
+    myChart.setOption({
+        series: [{
+            data: generateData(timer)
+        }]
+    });
+}, 50);
+
+window.addEventListener('resize', () => myChart.resize());
+</script>
+</body>
+</html>

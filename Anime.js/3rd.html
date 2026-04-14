@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced Haki Protocol</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root {
+            --haki-red: #ff0033;
+            --haki-dark: #200005;
+        }
+        body {
+            margin: 0; background: #000; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; cursor: crosshair; font-family: 'Arial', sans-serif;
+        }
+        #stage {
+            position: relative; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+        }
+        /* The Jagged Lightning SVG */
+        .haki-lightning {
+            position: absolute; width: 600px; height: 600px;
+            stroke: var(--haki-red); stroke-width: 5; fill: none;
+            filter: url(#glitch); opacity: 0; pointer-events: none;
+        }
+        .impact-circle {
+            position: absolute; width: 10px; height: 10px;
+            background: #fff; border-radius: 50%;
+            box-shadow: 0 0 50px var(--haki-red), 0 0 100px #fff;
+            opacity: 0; z-index: 10;
+        }
+        .ui-label {
+            position: absolute; bottom: 50px; color: var(--haki-red);
+            letter-spacing: 10px; font-weight: bold; opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="stage">
+        <div class="impact-circle"></div>
+        <div class="ui-label">HOLD TO CHARGE HAKI</div>
+        
+        <svg class="haki-lightning" viewBox="0 0 100 100">
+            <path d="M 50 50 L 20 10 L 40 40 L 10 70 L 50 50 L 80 90 L 60 60 L 90 30 Z" />
+        </svg>
+
+        <svg style="display: none;">
+            <defs>
+                <filter id="glitch">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="3" result="noise" />
+                    <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" />
+                </filter>
+            </defs>
+        </svg>
+    </div>
+
+    <script>
+        const stage = document.getElementById('stage');
+        const lightning = document.querySelector('.haki-lightning');
+        const core = document.querySelector('.impact-circle');
+        
+
+        gsap.set(lightning, { transformOrigin: "center" });
+
+        const chargeMode = () => {
+            gsap.to(core, { opacity: 1, scale: 4, duration: 0.2 });
+            gsap.to(stage, { backgroundColor: "#0a0002", duration: 1 });
+
+            gsap.to(lightning, { 
+                opacity: 0.8, 
+                scale: 1.2, 
+                duration: 0.05, 
+                repeat: -1, 
+                yoyo: true, 
+                rotation: () => Math.random() * 360 
+            });
+        };
+
+        const releaseMode = () => {
+            const tl = gsap.timeline();
+
+
+            tl.to(stage, { backgroundColor: "#fff", duration: 0.05 })
+              .to(stage, { backgroundColor: "#000", duration: 0.2 });
+
+
+            tl.to(stage, { x: 30, duration: 0.05, repeat: 8, yoyo: true }, 0);
+
+
+            tl.to(core, { scale: 50, opacity: 0, duration: 0.5, ease: "expo.out" }, 0);
+            
+
+            tl.to(lightning, { 
+                scale: 10, 
+                opacity: 0, 
+                rotation: "+=180", 
+                duration: 0.6, 
+                ease: "power4.out" 
+            }, 0);
+        };
+
+        window.addEventListener('mousedown', chargeMode);
+        window.addEventListener('mouseup', releaseMode);
+    </script>
+</body>
+</html>

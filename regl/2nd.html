@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>THREE: HAKI_SINGULARITY</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        canvas { display: block; }
+        .hud {
+            position: absolute; top: 20px; left: 20px;
+            color: #00f2ff; font-family: 'Syncopate', sans-serif;
+            border-left: 2px solid #ff0044; padding-left: 15px;
+            pointer-events: none; text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="hud">CORE: AXON_V4_CORE<br>STATUS: AWAKENED</div>
+    
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+
+
+        const hakiMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 },
+                colorA: { value: new THREE.Color("#ff0044") }, // Red
+                colorB: { value: new THREE.Color("#000000") }  // Black
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                varying float vDisplacement;
+                uniform float time;
+                void main() {
+                    vUv = uv;
+
+                    float noise = sin(position.x * 2.0 + time) * cos(position.y * 2.0 + time);
+                    vDisplacement = noise;
+                    vec3 newPosition = position + normal * noise * 5.0;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying vec2 vUv;
+                varying float vDisplacement;
+                uniform vec3 colorA;
+                uniform vec3 colorB;
+                void main() {
+
+                    float intensity = smoothstep(-1.0, 1.0, vDisplacement);
+                    vec3 finalColor = mix(colorB, colorA, intensity);
+                    gl_FragColor = vec4(finalColor, 1.0);
+                }
+            `,
+            wireframe: true // Makes it look like a high-tech digital core
+        });
+
+
+        const geometry = new THREE.SphereGeometry(15, 64, 64);
+        const sphere = new THREE.Mesh(geometry, hakiMaterial);
+        scene.add(sphere);
+
+        camera.position.z = 50;
+
+
+        function animate() {
+            hakiMaterial.uniforms.time.value += 0.05;
+            sphere.rotation.y += 0.01;
+            sphere.rotation.z += 0.005;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREATIVE LAB: ACID_EDIT</title>
+    <meta name="description" content="Acid/Brutalist Creative Coding Portfolio">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="custom-cursor" id="cursor"></div>
+
+    <div class="container">
+        <header>
+            <h1 class="glitch-title" data-text="CREATIVE_LAB">CREATIVE_LAB</h1>
+            <div class="controls-bar">
+                <input type="text" id="searchInput" placeholder="SEARCH_">
+                <div class="filters" id="filters">
+                    <button class="filter-btn active" data-filter="all">ALL_</button>
+                </div>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.8rem; font-weight: 700;">TOTAL_EXPERIMENTS: <span id="projectCount">0</span></p>
+        </header>
+
+        <main class="project-grid" id="projectGrid"></main>
+
+        <footer style="margin-top: 100px; padding: 40px 0; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: right;">
+            <p style="font-weight: 900; letter-spacing: 2px;">© 2026 - Just explore the js libs</p>
+        </footer>
+    </div>
+
+    <script>
+        const projects = [
+            { path: 'Anime.js/1st.html', folder: 'Anime.js', name: 'GLITCH_SEQ_01' },
+            { path: 'Anime.js/2nd.html', folder: 'Anime.js', name: 'GLITCH_SEQ_02' },
+            { path: 'Anime.js/3rd.html', folder: 'Anime.js', name: 'GLITCH_SEQ_03' },
+            { path: 'Babylon.js/1st.html', folder: 'Babylon.js', name: 'VOID_SCAN_01' },
+            { path: 'Babylon.js/2nd.html', folder: 'Babylon.js', name: 'VOID_SCAN_02' },
+            { path: 'Chart.js/1st.html', folder: 'Chart.js', name: 'DATA_HACK_01' },
+            { path: 'Chart.js/2nd.html', folder: 'Chart.js', name: 'DATA_HACK_02' },
+            { path: 'D3.js/1st.html', folder: 'D3.js', name: 'GRAPH_SYNC_01' },
+            { path: 'D3.js/2nd.html', folder: 'D3.js', name: 'GRAPH_SYNC_02' },
+            { path: 'ECharts/1st.html', folder: 'ECharts', name: 'VIZ_BLAST_01' },
+            { path: 'ECharts/2nd.html', folder: 'ECharts', name: 'VIZ_BLAST_02' },
+            { path: 'ECharts/3rd.html', folder: 'ECharts', name: 'VIZ_BLAST_03' },
+            { path: 'ECharts/4rt.html', folder: 'ECharts', name: 'VIZ_BLAST_04' },
+            { path: 'Framer Motion/1st.html', folder: 'Framer Motion', name: 'UX_LIQUID_01' },
+            { path: 'Framer Motion/2nd.html', folder: 'Framer Motion', name: 'UX_LIQUID_02' },
+            { path: 'GSAP/1st.html', folder: 'GSAP', name: 'SCROLL_LOCK_01' },
+            { path: 'GSAP/2nd.html', folder: 'GSAP', name: 'SCROLL_LOCK_02' },
+            { path: 'GSAP/3rd.html', folder: 'GSAP', name: 'SCROLL_LOCK_03' },
+            { path: 'Howler.js/1st.html', folder: 'Howler.js', name: 'AUD_WAVE_01' },
+            { path: 'Howler.js/2nd.html', folder: 'Howler.js', name: 'AUD_WAVE_02' },
+            { path: 'Hydra/1st.html', folder: 'Hydra', name: 'SIGNAL_NOISE_01' },
+            { path: 'Hydra/2nd.html', folder: 'Hydra', name: 'SIGNAL_NOISE_02' },
+            { path: 'Hydra/3rd.html', folder: 'Hydra', name: 'SIGNAL_NOISE_03' },
+            { path: 'Hydra/4rt.html', folder: 'Hydra', name: 'SIGNAL_NOISE_04' },
+            { path: 'Kaboom.js/1st.html', folder: 'Kaboom.js', name: 'ARCADE_CORE_01' },
+            { path: 'Kaboom.js/2nd.html', folder: 'Kaboom.js', name: 'ARCADE_CORE_02' },
+            { path: 'Lottie/1st.html', folder: 'Lottie', name: 'VECTOR_FLOW_01' },
+            { path: 'Lottie/2nd.html', folder: 'Lottie', name: 'VECTOR_FLOW_02' },
+            { path: 'Matter.js/1st.html', folder: 'Matter.js', name: 'PHYS_WORLD_01' },
+            { path: 'Matter.js/2nd.html', folder: 'Matter.js', name: 'PHYS_WORLD_02' },
+            { path: 'p5.js/1st.html', folder: 'p5.js', name: 'AESTHET_GEN_01' },
+            { path: 'p5.js/2nd.html', folder: 'p5.js', name: 'AESTHET_GEN_02' },
+            { path: 'Paper.js/1st.html', folder: 'Paper.js', name: 'PRIME_PATH_01' },
+            { path: 'Particles.js/1st.html', folder: 'Particles.js', name: 'ATOM_BURST_01' },
+            { path: 'Particles.js/2nd.html', folder: 'Particles.js', name: 'ATOM_BURST_02' },
+            { path: 'Phaser/1st.html', folder: 'Phaser', name: 'GAME_STATE_01' },
+            { path: 'Phaser/2nd.html', folder: 'Phaser', name: 'GAME_STATE_02' },
+            { path: 'PlayCanvas/1st.html', folder: 'PlayCanvas', name: 'HAKI_LEVEL_01' },
+            { path: 'PlayCanvas/2nd.html', folder: 'PlayCanvas', name: 'HAKI_LEVEL_02' },
+            { path: 'Processing.js/1st.html', folder: 'Processing.js', name: 'PROC_RENDER' },
+            { path: 'regl/1st.html', folder: 'regl', name: 'GPU_SPIKE_01' },
+            { path: 'regl/2nd.html', folder: 'regl', name: 'GPU_SPIKE_02' },
+            { path: 'regl/3rd.html', folder: 'regl', name: 'GPU_SPIKE_03' },
+            { path: 'Three.js/1st.html', folder: 'Three.js', name: 'RENDER_RIDE_01' },
+            { path: 'Three.js/2nd.html', folder: 'Three.js', name: 'RENDER_RIDE_02' },
+            { path: 'Tone.js/1st.html', folder: 'Tone.js', name: 'SYNTH_BASS_01' },
+            { path: 'Tone.js/2nd.html', folder: 'Tone.js', name: 'SYNTH_BASS_02' },
+            { path: 'Vanta.js/1st.html', folder: 'Vanta.js', name: 'ENV_DRIP_01' },
+            { path: 'Vanta.js/2nd.html', folder: 'Vanta.js', name: 'ENV_DRIP_02' },
+            { path: 'Vanta.js/3rd.html', folder: 'Vanta.js', name: 'ENV_DRIP_03' },
+            { path: 'Vanta.js/4rt.html', folder: 'Vanta.js', name: 'ENV_DRIP_04' },
+            { path: 'Vanta.js/5th.html', folder: 'Vanta.js', name: 'ENV_DRIP_05' },
+            { path: 'Vanta.js/6th.html', folder: 'Vanta.js', name: 'ENV_DRIP_06' },
+            { path: 'Vanta.js/7th.html', folder: 'Vanta.js', name: 'ENV_DRIP_07' },
+            { path: 'Vanta.js/8th.html', folder: 'Vanta.js', name: 'ENV_DRIP_08' },
+            { path: 'Zdog/1st.html', folder: 'Zdog', name: 'FLAT_3D_01' },
+            { path: 'Zdog/2nd.html', folder: 'Zdog', name: 'FLAT_3D_02' },
+            { path: 'Zdog/3rd.html', folder: 'Zdog', name: 'FLAT_3D_03' }
+        ];
+
+        const cursor = document.getElementById('cursor');
+        const grid = document.getElementById('projectGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterContainer = document.getElementById('filters');
+
+        window.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate3d(${e.clientX - 10}px, ${e.clientY - 10}px, 0)`;
+        });
+
+        function renderProjects(data) {
+            grid.innerHTML = '';
+            data.forEach((p, index) => {
+                const card = document.createElement('a');
+                const displayIndex = (index + 1).toString().padStart(2, '0');
+                card.href = p.path;
+                card.target = '_blank';
+                card.className = 'project-card';
+                card.innerHTML = `
+                    <div class="card-index">${displayIndex}</div>
+                    <div class="card-folder">${p.folder}</div>
+                    <div class="card-name">${p.name}</div>
+                    <div class="card-action">ENTER_EXPERIMENT</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        const folders = [...new Set(projects.map(p => p.folder))].sort();
+        folders.forEach(folder => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.textContent = `${folder}_`;
+            btn.dataset.filter = folder;
+            btn.onclick = () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                setActiveFilter(folder);
+            };
+            filterContainer.appendChild(btn);
+        });
+
+        let activeFilter = 'all';
+
+        function setActiveFilter(filter) {
+            activeFilter = filter;
+            filterAndRender();
+        }
+
+        function filterAndRender() {
+            const query = searchInput.value.toLowerCase();
+            const filtered = projects.filter(p => {
+                const matchesFolder = activeFilter === 'all' || p.folder === activeFilter;
+                const matchesSearch = p.name.toLowerCase().includes(query) || p.folder.toLowerCase().includes(query);
+                return matchesFolder && matchesSearch;
+            });
+            document.getElementById('projectCount').textContent = filtered.length;
+            renderProjects(filtered);
+        }
+
+        searchInput.oninput = filterAndRender;
+        document.querySelector('[data-filter="all"]').onclick = (e) => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            setActiveFilter('all');
+        };
+
+        renderProjects(projects);
+        document.getElementById('projectCount').textContent = projects.length;
+    </script>
+</body>
+</html>

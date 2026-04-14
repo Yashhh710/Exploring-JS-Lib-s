@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PHSYICS_DIFF: REALITY_TEAR</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; cursor: none; }
+        canvas { display: block; }
+        .hud {
+            position: absolute; top: 20px; left: 20px;
+            color: #00f2ff; font-family: monospace;
+            border-left: 2px solid #ff0044; padding-left: 10px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="hud">SYSTEM: AXON_PHYSICS_CORE<br>INTERACTION: SPACE_DISPLACEMENT</div>
+    <canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let width, height;
+let points = [];
+const spacing = 30;
+const mouse = { x: -1000, y: -1000, radius: 150 };
+
+function init() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    points = [];
+    for (let y = 0; y < height; y += spacing) {
+        for (let x = 0; x < width; x += spacing) {
+            points.push({ x, y, originalX: x, originalY: y, vx: 0, vy: 0 });
+        }
+    }
+}
+
+window.addEventListener('mousemove', e => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
+
+window.addEventListener('resize', init);
+init();
+
+function update() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillRect(0, 0, width, height);
+
+    points.forEach(p => {
+
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < mouse.radius) {
+            const force = (mouse.radius - dist) / mouse.radius;
+            const angle = Math.atan2(dy, dx);
+            p.vx -= Math.cos(angle) * force * 10;
+            p.vy -= Math.sin(angle) * force * 10;
+        }
+
+
+        p.vx += (p.originalX - p.x) * 0.05;
+        p.vy += (p.originalY - p.y) * 0.05;
+
+
+        p.vx *= 0.9;
+        p.vy *= 0.9;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+
+        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        if (speed > 0.5) {
+            ctx.strokeStyle = `rgba(255, 0, 68, ${Math.min(speed / 5, 1)})`;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x - p.vx * 2, p.y - p.vy * 2);
+            ctx.stroke();
+        }
+        
+
+        ctx.fillStyle = 'rgba(0, 242, 255, 0.2)';
+        ctx.fillRect(p.x, p.y, 2, 2);
+    });
+
+
+    ctx.strokeStyle = '#00f2ff';
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, 10, 0, Math.PI * 2);
+    ctx.stroke();
+
+    requestAnimationFrame(update);
+}
+
+update();
+</script>
+</body>
+</html>

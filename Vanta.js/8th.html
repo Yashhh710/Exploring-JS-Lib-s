@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXON PRIME: FINAL FORM</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; color: #00f2ff; font-family: monospace; }
+        #container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; }
+        .hud { position: absolute; top: 20px; left: 20px; z-index: 10; border-left: 2px solid #ff0044; padding-left: 15px; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div class="hud">
+        STATUS: SYSTEM_RECONSTRUCTED<br>
+        ENGINE: THREE.JS_R128_ULTRA<br>
+        AURA: SUPREME_CONQUEROR
+    </div>
+    <div id="container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('container').appendChild(renderer.domElement);
+
+
+        const cityCount = 1500;
+        const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+        boxGeo.translate(0, 0.5, 0); // Ground-align
+        const cityMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true });
+        const city = new THREE.InstancedMesh(boxGeo, cityMat, cityCount);
+        
+        const matrix = new THREE.Matrix4();
+        for (let i = 0; i < cityCount; i++) {
+            const x = (Math.random() - 0.5) * 80;
+            const z = (Math.random() - 0.5) * 80;
+            const dist = Math.sqrt(x*x + z*z);
+            const h = Math.max(0.5, (15 / (dist + 1)) * Math.random() * 8);
+            
+            matrix.makeScale(0.4, h, 0.4);
+            matrix.setPosition(x, 0, z);
+            city.setMatrixAt(i, matrix);
+        }
+        scene.add(city);
+
+
+        const partCount = 50000;
+        const pGeo = new THREE.BufferGeometry();
+        const pPos = new Float32Array(partCount * 3);
+        for(let i=0; i < partCount * 3; i++) {
+            pPos[i] = (Math.random() - 0.5) * 40;
+        }
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        const pMat = new THREE.PointsMaterial({ size: 0.015, color: 0xff0044, transparent: true, opacity: 0.6 });
+        const particles = new THREE.Points(pGeo, pMat);
+        scene.add(particles);
+
+        camera.position.set(0, 5, 20);
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = Date.now() * 0.001;
+
+
+            city.rotation.y = t * 0.05;
+            
+
+            particles.rotation.y = -t * 0.1;
+            particles.position.y = Math.sin(t) * 0.5;
+
+
+            camera.position.x = Math.sin(t * 0.2) * 15;
+            camera.position.z = Math.cos(t * 0.2) * 15;
+            camera.lookAt(0, 2, 0);
+
+            renderer.render(scene, camera);
+        }
+
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

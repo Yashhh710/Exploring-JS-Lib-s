@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ECharts Pro: Haki Vector Field</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/dist/echarts-gl.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; height: 100vh; }
+        #main { width: 100vw; height: 100vh; }
+        #overlay { position: absolute; top: 20px; left: 20px; color: #00f2ff; font-family: monospace; z-index: 10; border-left: 2px solid #00f2ff; padding-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="overlay">
+        ENGINE: GL_FLOW_PARTICLES_V2<br>
+        DYNAMICS: NON_LINEAR_VECTOR_FIELD<br>
+        POWER_LEVEL: SUPREME_CONQUEROR
+    </div>
+    <div id="main"></div>
+
+<script>
+const chartDom = document.getElementById('main');
+const myChart = echarts.init(chartDom);
+
+
+
+const data = [];
+for (let i = 0; i < 50; i++) {
+    for (let j = 0; j < 50; j++) {
+
+        const x = i - 25;
+        const y = j - 25;
+        const mag = Math.sqrt(x*x + y*y);
+        const u = -y / (mag + 1); // Velocity X
+        const v = x / (mag + 1);  // Velocity Y
+        data.push([i, j, u, v, mag]);
+    }
+}
+
+
+const option = {
+    backgroundColor: '#000',
+    visualMap: {
+        show: false,
+        min: 0,
+        max: 30,
+        inRange: {
+            color: ['#00f2ff', '#7000ff', '#ff0044']
+        }
+    },
+    xAxis: { type: 'value', splitLine: { show: false }, min: 0, max: 50 },
+    yAxis: { type: 'value', splitLine: { show: false }, min: 0, max: 50 },
+    series: [{
+        type: 'flowGL', // THE PRO DIFF: GPU Flow Engine
+        data: data,
+        particleDensity: 128,
+        particleSpeed: 2,
+        particleSize: 1.5,
+        gridWidth: 50,
+        gridHeight: 50,
+        itemStyle: {
+            opacity: 0.8
+        }
+    }]
+};
+
+myChart.setOption(option);
+
+
+window.addEventListener('resize', () => myChart.resize());
+</script>
+</body>
+</html>

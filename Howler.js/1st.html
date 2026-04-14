@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Howler Pro: Spatial Haki</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <style>
+        body { margin: 0; background: #010a01; color: #00ff41; font-family: 'Courier New', monospace; 
+               display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .hud-box { border: 1px solid #00ff41; padding: 30px; background: rgba(0, 255, 65, 0.05); text-align: center; }
+        input[type=range] { width: 300px; accent-color: #00ff41; cursor: pointer; }
+        .value-display { font-size: 40px; margin: 20px 0; text-shadow: 0 0 10px #00ff41; }
+    </style>
+</head>
+<body>
+
+    <div class="hud-box">
+        <div class="label">SPATIAL WILL ORIENTATION</div>
+        <div class="value-display" id="pos-val">0.0</div>
+        <input type="range" id="panner" min="-1" max="1" step="0.1" value="0">
+        <div style="margin-top: 20px;">
+            <button id="play-btn" style="padding: 10px 20px; background: transparent; border: 1px solid #00ff41; color: #00ff41; cursor: pointer;">
+                INITIATE FREQUENCY
+            </button>
+        </div>
+    </div>
+
+<script>
+
+
+const sound = new Howl({
+    src: ['https://actions.google.com/sounds/v1/science_fiction/glitch_low_frequencies.ogg'],
+    sprite: {
+        blast: [0, 3000] // Play from 0ms to 3000ms
+    },
+    loop: true,
+    volume: 0.5
+});
+
+let soundId = null;
+
+
+const panner = document.getElementById('panner');
+const posDisplay = document.getElementById('pos-val');
+
+panner.addEventListener('input', (e) => {
+    const xPos = parseFloat(e.target.value);
+    posDisplay.innerText = xPos.toFixed(1);
+
+    if (soundId !== null) {
+
+
+        sound.pos(xPos, 0, -0.5, soundId); 
+    }
+});
+
+
+document.getElementById('play-btn').addEventListener('click', () => {
+    if (!sound.playing()) {
+        soundId = sound.play('blast');
+
+        sound.pos(0, 0, -0.5, soundId);
+    } else {
+        sound.stop();
+    }
+});
+</script>
+</body>
+</html>

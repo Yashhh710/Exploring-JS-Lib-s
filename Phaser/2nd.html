@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phaser Pro: Matter.js Haki</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #ui { position: absolute; top: 20px; color: #ff0044; font-family: monospace; letter-spacing: 3px; pointer-events: none; text-shadow: 0 0 10px #ff0044; }
+    </style>
+</head>
+<body>
+    <div id="ui">SYSTEM: MATTER.JS RIGID BODY PHYSICS // HOLD CLICK TO PULL</div>
+    <script>
+        class ProHakiScene extends Phaser.Scene {
+            constructor() {
+                super('ProHakiScene');
+            }
+
+            preload() {
+                const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+                
+
+                graphics.lineStyle(3, 0x00f2ff, 1);
+                graphics.strokeCircle(25, 25, 20);
+                graphics.generateTexture('player', 50, 50);
+                
+
+                graphics.clear();
+                graphics.fillStyle(0xff0044, 0.8);
+                graphics.fillCircle(10, 10, 10);
+                graphics.generateTexture('debris', 20, 20);
+            }
+
+            create() {
+
+                this.matter.world.setBounds();
+
+
+                this.player = this.matter.add.image(400, 300, 'player');
+                this.player.setCircle(20);
+                this.player.setStatic(true); // Player is the anchor
+
+
+                this.debrisGroup = [];
+                for (let i = 0; i < 40; i++) {
+                    const x = Phaser.Math.Between(100, 700);
+                    const y = Phaser.Math.Between(100, 500);
+                    const d = this.matter.add.image(x, y, 'debris');
+                    d.setCircle(10);
+                    d.setFrictionAir(0.02); // Air resistance
+                    d.setBounce(0.9);
+                    this.debrisGroup.push(d);
+                }
+
+
+                this.isPulling = false;
+                this.input.on('pointerdown', () => this.isPulling = true);
+                this.input.on('pointerup', () => this.isPulling = false);
+            }
+
+            update() {
+
+                this.player.x = this.input.activePointer.x;
+                this.player.y = this.input.activePointer.y;
+
+                if (this.isPulling) {
+                    this.debrisGroup.forEach(d => {
+
+                        const angle = Phaser.Math.Angle.Between(d.x, d.y, this.player.x, this.player.y);
+                        const distance = Phaser.Math.Distance.Between(d.x, d.y, this.player.x, this.player.y);
+                        
+
+                        const force = 0.005 / (distance * 0.01);
+                        d.applyForce({
+                            x: Math.cos(angle) * force,
+                            y: Math.sin(angle) * force
+                        });
+
+
+                        d.applyForce({
+                            x: Math.cos(angle + Math.PI/2) * 0.001,
+                            y: Math.sin(angle + Math.PI/2) * 0.001
+                        });
+                    });
+                }
+            }
+        }
+
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            backgroundColor: '#000205',
+            physics: {
+                default: 'matter',
+                matter: { gravity: { y: 0 }, enableSleeping: true }
+            },
+            scene: ProHakiScene
+        };
+
+        new Phaser.Game(config);
+    </script>
+</body>
+</html>

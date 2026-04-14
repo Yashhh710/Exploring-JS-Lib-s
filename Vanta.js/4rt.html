@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vanta Pro: Voronoi Shatter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.cells.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; }
+        #vanta-canvas { width: 100vw; height: 100vh; }
+        .system-log {
+            position: absolute; top: 20px; right: 20px;
+            color: #00f2ff; font-family: monospace; font-size: 10px;
+            text-align: right; line-height: 1.5; pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="vanta-canvas"></div>
+    <div class="system-log">
+        LOG_04: SPACE_FRAGMENTATION_DETECTED<br>
+        ALGO: VORONOI_TESSELLATION_V8<br>
+        WILL_STRENGTH: UNMEASURABLE
+    </div>
+
+<script>
+
+VANTA.CELLS({
+  el: "#vanta-canvas",
+  mouseControls: true,
+  touchControls: true,
+  gyroControls: false,
+  minHeight: 200.00,
+  minWidth: 200.00,
+  scale: 1.00,
+
+  color1: 0xff0044,     // Conqueror Red
+  color2: 0x000810,     // Deepest Abyss
+  size: 1.50,           // Cell size
+  speed: 2.50           // "Frenzy" speed for the aura
+});
+</script>
+</body>
+</html>
